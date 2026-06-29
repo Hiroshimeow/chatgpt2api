@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import base64
 import json
@@ -14,6 +14,7 @@ from services.account_service import account_service
 from services.config import config
 from services.image_storage_service import image_storage_service
 from services.openai_backend_api import ImageContentPolicyError, ImagePollTimeoutError, OpenAIBackendAPI
+from services.openai_backend_pool import BackendTokenRef, backend_token_ref, lease_openai_backend
 from utils.helper import (
     IMAGE_MODELS,
     extract_image_from_message_content,
@@ -116,7 +117,7 @@ def image_stream_error_message(message: str) -> str:
 
 REFERENCED_IMAGE_IDS_RE = re.compile(r'"referenced_image_ids"\s*:\s*\[([^\]]+)\]')
 # 检测模型返回的部分工具调用 JSON（如 {"size":"1920x1088","n":1}）
-# 这些 JSON 包含图片生成工具的参数，但没有实际生成图片
+# 这些 JSON 包含Tạo ảnh工具的参数，但没有实际生成图片
 TOOL_PARAMS_JSON_RE = re.compile(
     r'\{\s*"size"\s*:\s*"\d+x\d+"\s*,\s*"n"\s*:\s*\d+\s*\}'
 )
@@ -125,7 +126,7 @@ TOOL_PARAMS_JSON_RE = re.compile(
 def is_model_text_reply_instead_of_image(message: str) -> bool:
     """检测模型是否返回了文本回复（包含工具调用 JSON）而非实际生成图片。
 
-    当上游 ChatGPT 未能触发图片生成工具时，会返回一段描述性文本，
+    当上游 ChatGPT 未能触发Tạo ảnh工具时，会返回一段描述性文本，
     其中可能包含 JSON 参数（如 prompt、referenced_image_ids、size/n 等）。
     这种情况应被视为「上游未生成图片」而非「内容策略违规」。
 
@@ -216,7 +217,7 @@ def assistant_history_messages(messages: list[dict[str, Any]]) -> list[str]:
 def build_image_prompt(prompt: str, size: str | None, quality: str = "auto") -> str:
     hints = []
     if size:
-        hints.append(f"输出图片尺寸为 {size}。")
+        hints.append(f"输出Kích thước ảnh为 {size}。")
     if quality:
         hints.append(f"输出图片质量为 {quality}。")
     return f"{prompt.strip()}\n\n{''.join(hints)}" if hints else prompt
@@ -674,8 +675,8 @@ def conversation_events(
     yield from iter_conversation_payloads(payloads, history_text, history_messages)
 
 
-def text_backend() -> OpenAIBackendAPI:
-    return OpenAIBackendAPI(access_token=account_service.get_text_access_token())
+def text_backend() -> BackendTokenRef:
+    return backend_token_ref(account_service.get_text_access_token())
 
 
 def stream_text_deltas(backend: OpenAIBackendAPI, request: ConversationRequest) -> Iterator[str]:
@@ -688,20 +689,20 @@ def stream_text_deltas(backend: OpenAIBackendAPI, request: ConversationRequest) 
         if token:
             attempted_tokens.add(token)
         try:
-            active_backend = OpenAIBackendAPI(access_token=token)
-            for event in conversation_events(
-                active_backend,
-                messages=request.messages,
-                model=request.model,
-                prompt=request.prompt,
-                thinking_effort=request.thinking_effort,
-            ):
-                if event.get("type") != "conversation.delta":
-                    continue
-                delta = str(event.get("delta") or "")
-                if delta:
-                    emitted = True
-                    yield delta
+            with lease_openai_backend(access_token=token) as active_backend:
+                for event in conversation_events(
+                    active_backend,
+                    messages=request.messages,
+                    model=request.model,
+                    prompt=request.prompt,
+                    thinking_effort=request.thinking_effort,
+                ):
+                    if event.get("type") != "conversation.delta":
+                        continue
+                    delta = str(event.get("delta") or "")
+                    if delta:
+                        emitted = True
+                        yield delta
             account_service.mark_text_used(token)
             return
         except Exception as exc:
@@ -737,8 +738,8 @@ def _get_detailed_error_from_tasks(
     参数：
     - `backend`：OpenAIBackendAPI 实例。
     - `conversation_id`：会话 ID。
-    - `timeout_secs`：请求超时秒数。
-    - `wait_secs`：等待任务创建的秒数。设为 0 可跳过等待。
+    - `timeout_secs`：Timeout request秒数。
+    - `wait_secs`：等待任务创建的秒数。设为 0 可Bỏ qua等待。
 
     返回：
     - 详细错误信息文本，如果未找到则返回空字符串。
@@ -834,7 +835,7 @@ def stream_image_outputs(
         return
 
     # 检测模型是否返回了文本描述（含 referenced_image_ids）而非实际生成图片
-    # 这说明模型已发起图片生成工具调用，但 SSE 在工具完成前断开，
+    # 这说明模型已发起Tạo ảnh工具调用，但 SSE 在工具完成前断开，
     # 图片可能正在异步生成中。需要使用更积极的轮询策略来获取结果。
     is_text_reply = bool(message and is_model_text_reply_instead_of_image(message))
     if is_text_reply:
@@ -891,7 +892,7 @@ def stream_image_outputs(
             })
 
     # 当检测到文本回复（含 referenced_image_ids）时，使用更长的超时来轮询图片结果。
-    # 因为上游可能将图片生成作为异步任务执行，SSE 流在工具完成前就断开了，
+    # 因为上游可能将Tạo ảnh作为异步任务执行，SSE 流在工具完成前就断开了，
     # 导致对话文档中尚未写入图片工具的响应记录。
     poll_timeout = config.image_poll_timeout_secs
     if is_text_reply and conversation_id:
@@ -952,7 +953,7 @@ def stream_image_outputs(
 
     if message:
         # 检测模型是否返回了文本描述（含 referenced_image_ids）而非实际生成图片
-        # 这说明模型已发起图片生成工具调用，但 SSE 在工具完成前断开。
+        # 这说明模型已发起Tạo ảnh工具调用，但 SSE 在工具完成前断开。
         # 此时应再尝试轮询图片结果，而不是直接把文本当作最终输出。
         # 当 is_text_reply 但 conversation_id 丢失时，尝试从最近对话列表恢复
         if is_text_reply and not conversation_id:
@@ -979,8 +980,8 @@ def stream_image_outputs(
                 "conversation_id": conversation_id,
                 "message_preview": message[:200],
             })
-            # 文本回复场景下，图片可能需要 4-5 分钟才能异步生成完成。
-            # 使用 300s 超时并允许多次重试，避免因临时网络问题提前退出。
+            # 文本回复场景下，图片可能需要 4-5 phút才能异步生成完成。
+            # 使用 300s 超时并允许多次重试，避免因临时网络问题提前Đăng xuất。
             retry_poll_timeout = max(config.image_poll_timeout_secs, 300)
             MAX_POLL_RETRIES = 3
             for poll_attempt in range(1, MAX_POLL_RETRIES + 1):
@@ -993,7 +994,7 @@ def stream_image_outputs(
                     )
                     file_ids.extend(item for item in polled_file_ids if item and item not in file_ids)
                     sediment_ids.extend(item for item in polled_sediment_ids if item and item not in sediment_ids)
-                    break  # 轮询成功，退出重试循环
+                    break  # 轮询成功，Đăng xuất重试循环
                 except Exception as exc:
                     error_str = str(exc)
                     is_transient = (
@@ -1055,7 +1056,7 @@ def stream_image_outputs(
         yield ImageOutput(kind="message", model=request.model, index=index, total=total, text=message, conversation_id=conversation_id)
         return
 
-    # 兜底：当 message 为空且图片 URL 解析失败时，先尝试一次短延迟重试轮询
+    # 兜底：当 message 为空且图片 URL 解析Thất bại时，先尝试一次短延迟重试轮询
     # 然后抛出明确错误而非让调用方得到 "upstream completed without generating images" 这种模糊报错
     logger.warning({
         "event": "image_stream_no_result_fallback",
@@ -1083,8 +1084,8 @@ def stream_image_outputs(
                 "error": repr(exc)[:300],
             })
     if should_poll_for_image and conversation_id:
-        # 图片可能仍在异步处理中（上游 SSE 流在图片生成完成前就结束了）。
-        # 使用 300s 超时并允许多次重试，避免因临时网络问题或图片尚未提交而提前退出。
+        # 图片可能仍在异步处理中（上游 SSE 流在Tạo ảnh完成前就结束了）。
+        # 使用 300s 超时并允许多次重试，避免因临时网络问题或图片尚未提交而提前Đăng xuất。
         retry_poll_timeout = max(config.image_poll_timeout_secs, 300)
         MAX_FALLBACK_POLL_RETRIES = 3
         for poll_attempt in range(1, MAX_FALLBACK_POLL_RETRIES + 1):
@@ -1105,7 +1106,7 @@ def stream_image_outputs(
                 )
                 file_ids.extend(item for item in polled_file_ids if item and item not in file_ids)
                 sediment_ids.extend(item for item in polled_sediment_ids if item and item not in sediment_ids)
-                break  # 轮询成功，退出重试循环
+                break  # 轮询成功，Đăng xuất重试循环
             except Exception as exc:
                 error_str = str(exc)
                 is_transient = (
@@ -1159,7 +1160,7 @@ def stream_image_outputs(
                     yield ImageOutput(kind="result", model=request.model, index=index, total=total, data=data, conversation_id=conversation_id)
                     return
         
-        # 重试后仍然失败，yield 错误消息
+        # 重试后仍然Thất bại，yield 错误消息
         yield ImageOutput(kind="message", model=request.model, index=index, total=total,
                           text="Image generation completed upstream but the result could not be retrieved. "
                                "The image may still be processing. Please try again in a moment.",
@@ -1229,7 +1230,7 @@ def _generate_single_image(
     """为单张图片执行生成逻辑（含重试），返回结果列表。
 
     该函数在独立线程中运行，每个线程使用不同的账号，
-    实现并行生图，避免串行超时阻塞。
+    实现并行Tạo ảnh，避免串行超时阻塞。
     """
     # 模型返回文本而非图片的最大重试次数
     MAX_TEXT_REPLY_RETRIES = 3
@@ -1273,45 +1274,43 @@ def _generate_single_image(
             "index": index,
         })
         try:
-            backend = OpenAIBackendAPI(access_token=token)
-            if request.progress_callback:
-                backend.progress_callback = request.progress_callback
-            stream_fn = stream_codex_image_outputs if is_codex_image_model(request.model) else stream_image_outputs
-            outputs: list[ImageOutput] = []
-            for output in stream_fn(backend, request, index, total):
-                if account_email and not output.account_email:
-                    output.account_email = account_email
-                if output.kind == "message" and request.message_as_error:
-                    raise ImageGenerationError(
-                        output.text or "Image generation was rejected by upstream policy.",
-                        status_code=400,
-                        error_type="invalid_request_error",
-                        code="content_policy_violation",
-                        account_email=account_email,
-                        conversation_id=output.conversation_id,
-                    )
-                emitted_for_token = True
-                returned_message = output.kind == "message"
-                returned_result = returned_result or output.kind == "result"
-                outputs.append(output)
-            if returned_message:
-                account_service.mark_image_result(token, False)
+            with lease_openai_backend(access_token=token, progress_callback=request.progress_callback) as backend:
+                stream_fn = stream_codex_image_outputs if is_codex_image_model(request.model) else stream_image_outputs
+                outputs: list[ImageOutput] = []
+                for output in stream_fn(backend, request, index, total):
+                    if account_email and not output.account_email:
+                        output.account_email = account_email
+                    if output.kind == "message" and request.message_as_error:
+                        raise ImageGenerationError(
+                            output.text or "Image generation was rejected by upstream policy.",
+                            status_code=400,
+                            error_type="invalid_request_error",
+                            code="content_policy_violation",
+                            account_email=account_email,
+                            conversation_id=output.conversation_id,
+                        )
+                    emitted_for_token = True
+                    returned_message = output.kind == "message"
+                    returned_result = returned_result or output.kind == "result"
+                    outputs.append(output)
+                if returned_message:
+                    account_service.mark_image_result(token, False)
+                    return outputs
+                if not returned_result:
+                    account_service.mark_image_result(token, False)
+                    if emitted_for_token:
+                        conv_id = outputs[-1].conversation_id if outputs else ""
+                        raise ImageGenerationError(
+                            "upstream completed without generating images",
+                            status_code=400,
+                            error_type="invalid_request_error",
+                            code="no_image_generated",
+                            account_email=account_email,
+                            conversation_id=conv_id,
+                        )
+                    return outputs
+                account_service.mark_image_result(token, True)
                 return outputs
-            if not returned_result:
-                account_service.mark_image_result(token, False)
-                if emitted_for_token:
-                    conv_id = outputs[-1].conversation_id if outputs else ""
-                    raise ImageGenerationError(
-                        "upstream completed without generating images",
-                        status_code=400,
-                        error_type="invalid_request_error",
-                        code="no_image_generated",
-                        account_email=account_email,
-                        conversation_id=conv_id,
-                    )
-                return outputs
-            account_service.mark_image_result(token, True)
-            return outputs
         except ImagePollTimeoutError as exc:
             account_service.mark_image_result(token, False)
             if account_email:
@@ -1459,7 +1458,7 @@ def stream_image_outputs_with_pool(request: ConversationRequest) -> Iterator[Ima
             yield output
         return
 
-    # 多张图片：根据配置选择并行或串行执行
+    # 多张图片：根据Cấu hình选择并行或串行执行
     if not config.image_parallel_generation:
         logger.info({
             "event": "image_serial_generation_start",
@@ -1499,7 +1498,7 @@ def stream_image_outputs_with_pool(request: ConversationRequest) -> Iterator[Ima
                     "error": str(exc)[:300],
                 })
 
-    # yield 结果：跳过索引顺序限制，不再让低索引失败阻塞高索引成功结果
+    # yield 结果：Bỏ qua索引顺序限制，不再让低索引Thất bại阻塞高索引成功结果
     emitted = False
     last_error = ""
     # 先 yield 所有成功的结果
@@ -1517,7 +1516,7 @@ def stream_image_outputs_with_pool(request: ConversationRequest) -> Iterator[Ima
                     "error": last_error[:200],
                 })
 
-    # 如果有失败但也有成功，记录警告
+    # 如果有Thất bại但也有成功，记录警告
     if emitted:
         for index in range(1, request.n + 1):
             if index in errors:
@@ -1563,3 +1562,5 @@ def collect_image_outputs(outputs: Iterable[ImageOutput]) -> dict[str, Any]:
     if account_email:
         result["_account_email"] = account_email
     return result
+
+

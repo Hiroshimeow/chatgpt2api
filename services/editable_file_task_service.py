@@ -248,7 +248,7 @@ class EditableFileTaskService:
         if result:
             detail["result"] = result
         try:
-            log_service.add(LOG_TYPE_CALL, f"{kind.upper()}生成任务{'失败' if status == 'failed' else '完成'}", detail)
+            log_service.add(LOG_TYPE_CALL, f"{kind.upper()}生成任务{'Thất bại' if status == 'failed' else '完成'}", detail)
         except Exception:
             pass
 

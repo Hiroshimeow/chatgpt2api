@@ -35,7 +35,7 @@ class AuthService:
 
     @staticmethod
     def _default_name(role: object) -> str:
-        return "管理员密钥" if str(role or "").strip().lower() == "admin" else "普通用户"
+        return "Admin密钥" if str(role or "").strip().lower() == "admin" else "Người dùng thường"
 
     def _normalize_item(self, raw: object) -> dict[str, object] | None:
         if not isinstance(raw, dict):
@@ -108,7 +108,7 @@ class AuthService:
             raise ValueError("请输入新的专用密钥")
         admin_key = self._clean(config.auth_key)
         if admin_key and hmac.compare_digest(candidate, admin_key):
-            raise ValueError("这个密钥和管理员密钥冲突了，请换一个新的密钥")
+            raise ValueError("这个密钥和Admin密钥冲突了，请换一个新的密钥")
         key_hash = _hash_key(candidate)
         if self._has_key_hash_locked(key_hash, exclude_id=exclude_id):
             raise ValueError("这个专用密钥已经存在，请换一个新的密钥")

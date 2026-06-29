@@ -34,9 +34,9 @@ export function CPAPoolDialog() {
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogContent showCloseButton={false} className="rounded-2xl p-6">
         <DialogHeader className="gap-2">
-          <DialogTitle>{editingPool ? "编辑连接" : "添加连接"}</DialogTitle>
+          <DialogTitle>{editingPool ? "编辑连接" : "Thêm连接"}</DialogTitle>
           <DialogDescription className="text-sm leading-6">
-            {editingPool ? "修改 CPA 连接信息" : "添加一个新的 CLIProxyAPI 连接"}
+            {editingPool ? "修改 CPA 连接信息" : "Thêm一个新的 CLIProxyAPI 连接"}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
@@ -91,7 +91,7 @@ export function CPAPoolDialog() {
             onClick={() => setDialogOpen(false)}
             disabled={isSavingPool}
           >
-            取消
+            Hủy
           </Button>
           <Button
             className="h-10 rounded-xl bg-stone-950 px-5 text-white hover:bg-stone-800"
@@ -99,7 +99,7 @@ export function CPAPoolDialog() {
             disabled={isSavingPool}
           >
             {isSavingPool ? <LoaderCircle className="size-4 animate-spin" /> : <Save className="size-4" />}
-            {editingPool ? "保存修改" : "添加"}
+            {editingPool ? "Lưu thay đổi" : "Thêm"}
           </Button>
         </DialogFooter>
       </DialogContent>

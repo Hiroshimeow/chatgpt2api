@@ -368,7 +368,7 @@ export function ImageLightbox({
               type="button"
               onClick={handleDownload}
               className="inline-flex size-9 items-center justify-center rounded-full bg-black/50 text-white/90 transition hover:bg-black/70"
-              aria-label="下载图片"
+              aria-label="Tải xuống图片"
             >
               <Download className="size-4" />
             </button>

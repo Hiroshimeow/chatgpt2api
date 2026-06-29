@@ -71,7 +71,7 @@ EDITABLE_FILE_CLIENT_BUILD_NUMBER = "6631702"
 EDITABLE_FILE_PSD_OUTPUT_DIR = "data/files/psd"
 EDITABLE_FILE_PPT_OUTPUT_DIR = "data/files/ppt"
 EDITABLE_FILE_PPT_PROMPT = """我需要你根据用户的需求，来制作一个可以编辑的PPT，你可以使用Agent来做，你不要再继续询问用户问题，内容风格、版式、配色、内容结构和页面信息你可以自行补充并直接执行。整体的流程如下：
-1. 用生图的方式，帮我生成一个精美的产品介绍ppt，5-6个页面
+1. 用Tạo ảnh的方式，帮我生成一个精美的产品介绍ppt，5-6个页面
 2. 帮我把以上涉及到的所有图像和形状素材拆分成单独png，每个素材单独一张图片，不要有遗漏，让我可以直接在ppt里拼接素材还原，不要文字
 3. 利用以上所有图片和形状素材，帮我还原你第一次生成的展示ppt，我需要是可编辑的ppt格式，主要部分需要你单独还原插入，文字需要可以编辑
 最后只需要给我生成一个PPT文件，以及生成中遇到的各种素材压缩包zip文件就行。"""
@@ -140,7 +140,7 @@ class OpenAIBackendAPI:
     """ChatGPT Web 后端封装。
 
     说明：
-    - 传入 `access_token` 时，聊天和模型列表都会走已登录链路
+    - 传入 `access_token` 时，聊天和Danh sách model都会走已登录链路
       例如 `/backend-api/sentinel/chat-requirements`、`/backend-api/conversation`
     - 不传 `access_token` 时，会走未登录链路
       例如 `/backend-anon/sentinel/chat-requirements`、`/backend-anon/conversation`
@@ -529,7 +529,7 @@ class OpenAIBackendAPI:
         return payload
 
     def _image_model_slug(self, model: str) -> str:
-        """把标准图片模型名映射到底层 model slug。"""
+        """把标准图片Tên model映射到底层 model slug。"""
         _, base_model = split_image_model(model)
         if not base_model:
             return "auto"
@@ -824,7 +824,7 @@ class OpenAIBackendAPI:
             raise UpstreamHTTPError(path, error.code, body, retry_after=retry_after) from error
 
     def _prepare_image_conversation(self, prompt: str, requirements: ChatRequirements, model: str) -> str:
-        """为图片生成准备 conduit token。"""
+        """为Tạo ảnh准备 conduit token。"""
         path = "/backend-api/f/conversation/prepare"
         payload = {
             "action": "next",
@@ -930,7 +930,7 @@ class OpenAIBackendAPI:
 
     def _start_image_generation(self, prompt: str, requirements: ChatRequirements, conduit_token: str, model: str,
                                 references: Optional[list[Dict[str, Any]]] = None) -> requests.Response:
-        """启动图片生成或编辑的 SSE 请求。"""
+        """启动Tạo ảnh或编辑的 SSE 请求。"""
         references = references or []
         parts = [{
             "content_type": "image_asset_pointer",
@@ -1038,7 +1038,7 @@ class OpenAIBackendAPI:
         参数：
             prompt: 用户输入的 prompt 文本
             started_at: 请求开始的时间戳（epoch seconds）
-            timeout_secs: 请求超时秒数
+            timeout_secs: Timeout request秒数
 
         返回：
             匹配的 conversation_id，如果未找到返回空字符串
@@ -1046,7 +1046,7 @@ class OpenAIBackendAPI:
         items = self._list_recent_conversations(limit=10, timeout_secs=timeout_secs)
         if not items:
             return ""
-        # 筛选在 started_at 之前或附近创建的对话（最多往前 5 分钟）
+        # 筛选在 started_at 之前或附近创建的对话（最多往前 5 phút）
         # ChatGPT 的 updated_at 通常晚于实际请求时间
         prompt_lower = str(prompt or "").lower().strip()
         best_match = ""
@@ -1071,7 +1071,7 @@ class OpenAIBackendAPI:
                 common = prompt_words & title_words
                 if common:
                     score = len(common) / max(len(prompt_words), 1)
-            # 图生图通常标题为 "Image" 开头
+            # 图Tạo ảnh通常标题为 "Image" 开头
             if title.startswith("image"):
                 score += 0.3
             if score > best_score:
@@ -2045,7 +2045,7 @@ class OpenAIBackendAPI:
             if role not in {"assistant", "tool"}:
                 continue
             content = message.get("content") or {}
-            # 提取消息文本
+            # 提Hủy息文本
             text_parts: list[str] = []
             if isinstance(content, dict):
                 msg_parts = content.get("parts") or []
@@ -2159,7 +2159,7 @@ class OpenAIBackendAPI:
                             "metadata": metadata,
                         })
             except Exception as exc:
-                # tasks 查询失败不影响正常轮询流程
+                # tasks Truy vấnThất bại不影响正常轮询流程
                 logger.debug({
                     "event": "image_poll_task_check_failed",
                     "conversation_id": conversation_id,
@@ -2245,9 +2245,9 @@ class OpenAIBackendAPI:
             "last_task_error": last_task_error if last_task_error else None,
         })
         exc = ImagePollTimeoutError(
-            f"ChatGPT 生图超时（已等待 {timeout_secs} 秒）。"
+            f"ChatGPT Tạo ảnh超时（已等待 {timeout_secs} 秒）。"
             f"当前超时阈值可在 config.json 中调大 image_poll_timeout_secs，"
-            f"也可能是账号被限流或生图队列拥堵导致。"
+            f"也可能是账号被限流或Tạo ảnh队列拥堵导致。"
         )
         if last_task_error:
             setattr(exc, "task_error", last_task_error)
@@ -2255,7 +2255,7 @@ class OpenAIBackendAPI:
         raise exc
 
     def _get_file_download_url(self, file_id: str) -> str:
-        """获取文件下载地址。"""
+        """获取文件Tải xuống地址。"""
         path = f"/backend-api/files/{file_id}/download"
         response = self.session.get(self.base_url + path, headers=self._headers(path, {"Accept": "application/json"}),
                                     timeout=60)
@@ -2264,7 +2264,7 @@ class OpenAIBackendAPI:
         return data.get("download_url") or data.get("url") or ""
 
     def _get_attachment_download_url(self, conversation_id: str, attachment_id: str) -> str:
-        """通过 conversation 附件接口获取下载地址。"""
+        """通过 conversation 附件接口获取Tải xuống地址。"""
         path = f"/backend-api/conversation/{conversation_id}/attachment/{attachment_id}/download"
         response = self.session.get(self.base_url + path, headers=self._headers(path, {"Accept": "application/json"}),
                                     timeout=60)
@@ -2278,12 +2278,12 @@ class OpenAIBackendAPI:
         task_id: str = "",
         timeout_secs: float = 30.0,
     ) -> list[Dict[str, Any]]:
-        """查询 /backend-api/tasks/ 接口获取异步任务状态和错误信息。
+        """Truy vấn /backend-api/tasks/ 接口获取异步Trạng thái task和错误信息。
 
         参数：
         - `conversation_id`：可选。按 conversation_id 过滤任务。
         - `task_id`：可选。按 task_id 过滤任务。
-        - `timeout_secs`：请求超时秒数。
+        - `timeout_secs`：Timeout request秒数。
 
         返回：
         - 任务列表，每个任务包含 image_gen_message 等字段。
@@ -2345,7 +2345,7 @@ class OpenAIBackendAPI:
         return is_error, error_msg, metadata
 
     def _resolve_image_urls(self, conversation_id: str, file_ids: list[str], sediment_ids: list[str]) -> list[str]:
-        """把图片结果 id 解析成可下载 URL。"""
+        """把图片结果 id 解析成可Tải xuống URL。"""
         urls = []
         skip_patterns = {"file_upload"}
         for file_id in file_ids:
@@ -2430,7 +2430,7 @@ class OpenAIBackendAPI:
         sediment_ids = list(sediment_ids)
         timeout = poll_timeout_secs if poll_timeout_secs is not None else config.image_poll_timeout_secs
         # 当 check-before-hit 和 settle 均已关闭，且 SSE 已给出 file_ids 时，
-        # 跳过轮询直接解析 URL，省去 initial_wait + 轮询耗时。
+        # Bỏ qua轮询直接解析 URL，省去 initial_wait + 轮询耗时。
         if poll and conversation_id and (file_ids or sediment_ids):
             if not config.image_check_before_hit_enabled and not config.image_settle_enabled:
                 logger.info({

@@ -359,7 +359,7 @@ class ImageStorageService:
     def sync_all(self) -> dict[str, int]:
         settings = self.settings()
         if self.mode() not in {"webdav", "both"}:
-            raise ImageStorageError("WebDAV 图片存储未启用")
+            raise ImageStorageError("WebDAV 图片存储未Bật")
         uploaded = 0
         skipped = 0
         failed = 0

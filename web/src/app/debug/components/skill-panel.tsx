@@ -23,12 +23,12 @@ export function SkillPanel() {
   const apiBaseUrl = configuredBaseUrl || webConfig.apiUrl.replace(/\/$/, "") || browserBaseUrl;
   const skillZh = useMemo(() => `---
 name: chatgpt2api-search
-description: 当用户需要联网搜索、查询最新信息、核实事实或需要来源链接时，调用本地 chatgpt2api 搜索接口。
+description: 当用户需要联网Tìm kiếm、Truy vấn最新信息、核实事实或需要来源链接时，调用本地 chatgpt2api Tìm kiếm接口。
 ---
 
-# ChatGPT2API 搜索
+# ChatGPT2API Tìm kiếm
 
-当用户要求联网搜索、查询最新信息、核实资料、查新闻、查价格、查文档更新或需要来源链接时，使用这个 skill。
+当用户要求联网Tìm kiếm、Truy vấn最新信息、核实资料、查新闻、查价格、查文档更新或需要来源链接时，使用这个 skill。
 
 ## 接口
 
@@ -42,7 +42,7 @@ Content-Type: application/json
 Body:
 
 {
-  "prompt": "<用户要搜索的问题>"
+  "prompt": "<用户要Tìm kiếm的问题>"
 }
 
 ## 返回处理
@@ -88,7 +88,7 @@ JSON body:
 - If the endpoint returns an error, summarize the error and ask the user whether to retry.
 - Keep the final answer concise unless the user asks for detail.`, [apiBaseUrl, authKey]);
 
-  const zhPrompt = useMemo(() => `请帮我在本机安装一个用于联网搜索的 skill。
+  const zhPrompt = useMemo(() => `请帮我在Máy local安装一个用于联网Tìm kiếm的 skill。
 
 要求：
 1. 请按你当前环境的 skill 安装规范，把它安装成本地 skill。
@@ -151,7 +151,7 @@ ${skillEn}
             <div className="flex gap-2">
               <Button size="sm" variant="outline" className="cursor-pointer" onClick={() => downloadSkill(item.skill)}>
                 <Download />
-                下载
+                Tải xuống
               </Button>
               <Button size="sm" className="cursor-pointer" onClick={() => void copyText(item.prompt)}>
                 <Copy />

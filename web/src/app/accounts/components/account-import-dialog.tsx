@@ -118,7 +118,7 @@ function readFileAsText(file: File) {
   return new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : "");
-    reader.onerror = () => reject(reader.error ?? new Error(`读取文件失败: ${file.name}`));
+    reader.onerror = () => reject(reader.error ?? new Error(`Đọc file thất bại: ${file.name}`));
     reader.readAsText(file);
   });
 }
@@ -197,7 +197,7 @@ export function AccountImportDialog({ disabled, onImported }: AccountImportDialo
     const normalizedTokens = tokens.map((item) => item.trim()).filter(Boolean);
 
     if (normalizedTokens.length === 0) {
-      toast.error("请先提供至少一个可用 Token");
+      toast.error("Hãy cung cấp ít nhất một Token khả dụng");
       return;
     }
 
@@ -211,15 +211,15 @@ export function AccountImportDialog({ disabled, onImported }: AccountImportDialo
       if ((data.errors?.length ?? 0) > 0) {
         const firstError = data.errors?.[0]?.error;
         toast.error(
-          `${successText ?? "导入完成"}，新增 ${data.added ?? 0} 个，已刷新 ${data.refreshed ?? 0} 个，失败 ${data.errors?.length ?? 0} 个${firstError ? `，首个错误：${firstError}` : ""}`,
+          `${successText ?? "Import hoàn tất"}，Thêm mới ${data.added ?? 0} 个，Đã refresh ${data.refreshed ?? 0} 个，Thất bại ${data.errors?.length ?? 0} 个${firstError ? `，Lỗi đầu tiên：${firstError}` : ""}`,
         );
       } else {
         toast.success(
-          `${successText ?? "导入完成"}，新增 ${data.added ?? 0} 个，跳过 ${data.skipped ?? 0} 个重复项，已自动刷新账号信息`,
+          `${successText ?? "Import hoàn tất"}，Thêm mới ${data.added ?? 0} 个，Bỏ qua ${data.skipped ?? 0} 个mục trùng，đã tự động refresh thông tin tài khoản`,
         );
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : "导入账户失败";
+      const message = error instanceof Error ? error.message : "导入账户Thất bại";
       toast.error(message);
     } finally {
       setIsSubmitting(false);
@@ -227,10 +227,10 @@ export function AccountImportDialog({ disabled, onImported }: AccountImportDialo
   };
 
   const handleImportTokenText = async () => {
-    await submitTokens(splitTokens(tokenInput), "Access Token 导入完成");
+    await submitTokens(splitTokens(tokenInput), "Access Token Import hoàn tất");
   };
 
-  // 起授权：拿 authorize URL，立刻在新窗口打开，方便用户登录
+  // Bắt đầu ủy quyền：拿 authorize URL，立刻在新窗口打开，方便用户登录
   const handleStartOAuth = async () => {
     setOauthStarting(true);
     try {
@@ -240,9 +240,9 @@ export function AccountImportDialog({ disabled, onImported }: AccountImportDialo
       if (typeof window !== "undefined") {
         window.open(data.authorize_url, "_blank", "noopener,noreferrer");
       }
-      toast.success("已打开 OpenAI 授权页面，请在登录后复制 callback URL 回来");
+      toast.success("Đã mở trang ủy quyền OpenAI; sau khi đăng nhập hãy copy callback URL về đây");
     } catch (error) {
-      const message = error instanceof Error ? error.message : "OAuth 起始失败";
+      const message = error instanceof Error ? error.message : "OAuth 起始Thất bại";
       toast.error(message);
     } finally {
       setOauthStarting(false);
@@ -252,12 +252,12 @@ export function AccountImportDialog({ disabled, onImported }: AccountImportDialo
   // 用粘贴回来的 callback URL 完成换 token + 落盘
   const handleFinishOAuth = async () => {
     if (!oauthSession) {
-      toast.error("请先点击\"打开授权页面\"获取 session");
+      toast.error("Hãy bấm trước\"Mở trang ủy quyền\"lấy session");
       return;
     }
     const trimmed = oauthCallbackInput.trim();
     if (!trimmed) {
-      toast.error("请粘贴 callback URL 或 code");
+      toast.error("Hãy dán callback URL hoặc code");
       return;
     }
 
@@ -271,15 +271,15 @@ export function AccountImportDialog({ disabled, onImported }: AccountImportDialo
       if ((data.errors?.length ?? 0) > 0) {
         const firstError = data.errors?.[0]?.error;
         toast.error(
-          `OAuth 登录完成，新增 ${data.added ?? 0} 个，已刷新 ${data.refreshed ?? 0} 个，失败 ${data.errors?.length ?? 0} 个${firstError ? `，首个错误：${firstError}` : ""}`,
+          `Đăng nhập OAuth hoàn tất，Thêm mới ${data.added ?? 0} 个，Đã refresh ${data.refreshed ?? 0} 个，Thất bại ${data.errors?.length ?? 0} 个${firstError ? `，Lỗi đầu tiên：${firstError}` : ""}`,
         );
       } else {
         toast.success(
-          `OAuth 登录完成，新增 ${data.added ?? 0} 个，跳过 ${data.skipped ?? 0} 个重复项，已自动刷新账号信息`,
+          `Đăng nhập OAuth hoàn tất，Thêm mới ${data.added ?? 0} 个，Bỏ qua ${data.skipped ?? 0} 个mục trùng，đã tự động refresh thông tin tài khoản`,
         );
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : "OAuth 换 token 失败";
+      const message = error instanceof Error ? error.message : "OAuth 换 token Thất bại";
       toast.error(message);
     } finally {
       setIsSubmitting(false);
@@ -294,12 +294,12 @@ export function AccountImportDialog({ disabled, onImported }: AccountImportDialo
     try {
       if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(oauthSession.authorize_url);
-        toast.success("授权 URL 已复制到剪贴板");
+        toast.success("Đã copy URL ủy quyền vào clipboard");
       } else {
-        toast.error("当前环境不支持自动复制，请手动选择并复制");
+        toast.error("Môi trường hiện tại không hỗ trợ copy tự động, hãy chọn và copy thủ công");
       }
     } catch {
-      toast.error("复制失败，请手动选择并复制");
+      toast.error("复制Thất bại，请手动选择并复制");
     }
   };
 
@@ -316,7 +316,7 @@ export function AccountImportDialog({ disabled, onImported }: AccountImportDialo
       const tokens = splitTokens(content);
 
       if (tokens.length === 0) {
-        toast.error("TXT 文件里没有读取到有效 Token");
+        toast.error("Không đọc được Token hợp lệ trong file TXT");
         return;
       }
 
@@ -324,16 +324,16 @@ export function AccountImportDialog({ disabled, onImported }: AccountImportDialo
         const next = [...splitTokens(prev), ...tokens];
         return next.join("\n");
       });
-      toast.success(`已从 ${file.name} 读取 ${tokens.length} 个 Token`);
+      toast.success(`Đã đọc từ ${file.name} 读取 ${tokens.length} 个 Token`);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "读取 TXT 文件失败";
+      const message = error instanceof Error ? error.message : "读取 TXT 文件Thất bại";
       toast.error(message);
     }
   };
 
   const handleImportSessionJson = async () => {
     if (!sessionInput.trim()) {
-      toast.error("请先粘贴完整 Session JSON");
+      toast.error("Hãy dán Session JSON đầy đủ trước");
       return;
     }
 
@@ -342,20 +342,20 @@ export function AccountImportDialog({ disabled, onImported }: AccountImportDialo
       const token = getSessionAccessToken(payload);
 
       if (!token) {
-        toast.error("未从 Session JSON 中提取到 accessToken");
+        toast.error("Không trích xuất được accessToken từ Session JSON");
         return;
       }
 
-      await submitTokens([token], "Session JSON 导入完成");
+      await submitTokens([token], "Session JSON Import hoàn tất");
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Session JSON 解析失败";
+      const message = error instanceof Error ? error.message : "Session JSON 解析Thất bại";
       toast.error(message);
     }
   };
 
   const handleImportCodexAuthJson = async () => {
     if (!codexAuthInput.trim()) {
-      toast.error("请先粘贴 Codex 认证 JSON");
+      toast.error("Hãy dán Codex auth JSON trước");
       return;
     }
 
@@ -364,13 +364,13 @@ export function AccountImportDialog({ disabled, onImported }: AccountImportDialo
       const account = getCodexAuthAccount(payload);
 
       if (!account) {
-        toast.error("未从 Codex 认证 JSON 中提取到 access_token");
+        toast.error("Không trích xuất được access_token từ Codex auth JSON");
         return;
       }
 
-      await submitTokens([account.access_token], "Codex 认证 JSON 导入完成", [account]);
+      await submitTokens([account.access_token], "Codex 认证 JSON Import hoàn tất", [account]);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Codex 认证 JSON 解析失败";
+      const message = error instanceof Error ? error.message : "Codex 认证 JSON 解析Thất bại";
       toast.error(message);
     }
   };
@@ -413,7 +413,7 @@ export function AccountImportDialog({ disabled, onImported }: AccountImportDialo
       });
       setConfirmOpen(true);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "读取 CPA JSON 文件失败";
+      const message = error instanceof Error ? error.message : "读取 CPA JSON 文件Thất bại";
       toast.error(message);
     }
   };
@@ -532,7 +532,7 @@ export function AccountImportDialog({ disabled, onImported }: AccountImportDialo
             <div className="font-medium text-stone-800">操作步骤</div>
             <ol className="list-decimal pl-5 space-y-1">
               <li>（可选）填写你 ChatGPT 账号的邮箱，登录页会预填。</li>
-              <li>点击下方"打开授权页面"，在新标签里登录自己的 ChatGPT 账号。</li>
+              <li>点击下方"Mở trang ủy quyền"，在新标签里登录自己的 ChatGPT 账号。</li>
               <li>登录完成后浏览器会跳到 <code className="rounded bg-stone-200 px-1">platform.openai.com/auth/callback?code=...</code>。立刻从地址栏复制整段 URL（或开 F12 在 Network 里抓到 callback 那一行，右键 Copy → Copy URL）。</li>
               <li>把 callback URL 粘到下面输入框，点"完成导入"。</li>
             </ol>
@@ -556,7 +556,7 @@ export function AccountImportDialog({ disabled, onImported }: AccountImportDialo
               disabled={oauthStarting}
             >
               {oauthStarting ? <LoaderCircle className="size-4 animate-spin" /> : <ExternalLink className="size-4" />}
-              打开授权页面
+              Mở trang ủy quyền
             </Button>
           ) : (
             <div className="space-y-3">
@@ -609,7 +609,7 @@ export function AccountImportDialog({ disabled, onImported }: AccountImportDialo
             <div className="font-medium">注意</div>
             <div>
               授权码（code）只能使用一次。如果浏览器的 callback 页加载完成、显示了 OpenAI 的错误页，那 code 大概率已经被消耗，
-              请点击"重新生成"再走一次。整个流程在 10 分钟内完成即可。
+              请点击"重新生成"再走一次。整个流程在 10 phút内完成即可。
             </div>
           </div>
         </div>
@@ -720,7 +720,7 @@ export function AccountImportDialog({ disabled, onImported }: AccountImportDialo
         />
         <MethodCard
           title="从远程 CPA 服务器导入"
-          description="前往设置页面配置远程 CPA 服务器后再执行导入。"
+          description="前往Cài đặt页面Cấu hình远程 CPA 服务器后再执行导入。"
           icon={Files}
           onClick={() => {
             setOpen(false);
@@ -730,7 +730,7 @@ export function AccountImportDialog({ disabled, onImported }: AccountImportDialo
         />
         <MethodCard
           title="从 Sub2API 服务器导入"
-          description="前往设置页面配置 Sub2API 服务器，再选择其中的 OpenAI 账号导入。"
+          description="前往Cài đặt页面Cấu hình Sub2API 服务器，再选择其中的 OpenAI 账号导入。"
           icon={ServerCog}
           onClick={() => {
             setOpen(false);
@@ -772,7 +772,7 @@ export function AccountImportDialog({ disabled, onImported }: AccountImportDialo
             </DialogTitle>
             <DialogDescription className="text-sm leading-6">
               {method === "menu"
-                ? "选择一种导入方式。导入成功后会自动拉取邮箱、类型和额度。"
+                ? "选择一种导入方式。导入成功后会自动拉取邮箱、Loại和额度。"
                 : method === "token"
                   ? "支持手动粘贴或从 TXT 文件导入，一行一个 Token。"
                   : method === "session"
@@ -794,7 +794,7 @@ export function AccountImportDialog({ disabled, onImported }: AccountImportDialo
               onClick={() => setOpen(false)}
               disabled={footerDisabled}
             >
-              取消
+              Hủy
             </Button>
             {method === "token" ? (
               <Button
@@ -882,7 +882,7 @@ export function AccountImportDialog({ disabled, onImported }: AccountImportDialo
               onClick={() =>
                 void submitTokens(
                   pendingCpaImport?.tokens ?? [],
-                  "CPA JSON 导入完成",
+                  "CPA JSON Import hoàn tất",
                   pendingCpaImport?.accounts ?? [],
                 )
               }

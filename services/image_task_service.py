@@ -86,7 +86,7 @@ def _public_task(task: dict[str, Any]) -> dict[str, Any]:
         item["duration_ms"] = task.get("duration_ms")
     if task.get("status") in (TASK_STATUS_RUNNING, TASK_STATUS_QUEUED):
         if task.get("status") == TASK_STATUS_RUNNING:
-            # RUNNING 状态仅在 started_ts 被设置后（image_stream_resolve_start）才计时
+            # RUNNING 状态仅在 started_ts 被Cài đặt后（image_stream_resolve_start）才计时
             base_ts = task.get("started_ts")
         else:
             # QUEUED 状态从 created_ts 开始计时（排队等待中）
@@ -249,12 +249,12 @@ class ImageTaskService:
     ) -> None:
         started = time.time()
         self._update_task(key, status=TASK_STATUS_RUNNING, error="")
-        # 创建进度回调，每个步骤完成后更新任务状态
+        # 创建进度回调，每个步骤完成后更新Trạng thái task
         def progress_callback(step: str) -> None:
             if step == "image_stream_resolve_start":
                 self._update_task(key, started_ts=time.time())
             self._update_task(key, progress=step)
-        # 将进度回调添加到 payload 中（handler 会提取并传递给 ConversationRequest）
+        # 将进度回调Thêm到 payload 中（handler 会提取并传递给 ConversationRequest）
         payload_with_progress = {**payload, "progress_callback": progress_callback}
         try:
             handler = self.edit_handler if mode == "edit" else self.generation_handler
@@ -268,7 +268,7 @@ class ImageTaskService:
                 if upstream:
                     message = upstream
                 else:
-                    message = "号池中没有可用账号或所有账号均被限流，请检查号池状态（账号额度、是否被封禁、是否到达生图上限）"
+                    message = "号池中没有可用账号或所有账号均被限流，请检查号池状态（账号额度、是否被封禁、是否到达Tạo ảnh上限）"
                 error = RuntimeError(message)
                 if account_email:
                     setattr(error, "account_email", account_email)
@@ -299,7 +299,7 @@ class ImageTaskService:
                 mode,
                 model,
                 started,
-                "调用失败",
+                "调用Thất bại",
                 request_preview=request_text(payload.get("prompt")),
                 status="failed",
                 error=error_message,
@@ -321,7 +321,7 @@ class ImageTaskService:
         account_email: str = "",
     ) -> None:
         endpoint = "/v1/images/edits" if mode == "edit" else "/v1/images/generations"
-        summary_prefix = "图生图" if mode == "edit" else "文生图"
+        summary_prefix = "图Tạo ảnh" if mode == "edit" else "文Tạo ảnh"
         detail = {
             "key_id": identity.get("id"),
             "key_name": identity.get("name"),
@@ -458,7 +458,7 @@ class ImageTaskService:
                 raise ValueError("task has no conversation_id")
             mode = task.get("mode", "generate")
             model = task.get("model", "gpt-image-2")
-            # 将任务状态重置为 running
+            # 将Trạng thái task重置为 running
             self._update_task(key, status=TASK_STATUS_RUNNING, error="")
 
         # 启动新线程继续轮询
@@ -500,7 +500,7 @@ class ImageTaskService:
                 conversation_id, file_ids, sediment_ids, poll=False,
             )
             if not image_urls:
-                raise RuntimeError("图片 URL 解析失败")
+                raise RuntimeError("图片 URL 解析Thất bại")
 
             image_items = [
                 {"b64_json": __import__("base64").b64encode(image_data).decode("ascii")}
@@ -537,7 +537,7 @@ class ImageTaskService:
                 mode,
                 model,
                 started,
-                "调用失败（续轮询）",
+                "调用Thất bại（续轮询）",
                 status="failed",
                 error=error_message,
             )

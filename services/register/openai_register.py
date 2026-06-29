@@ -298,7 +298,7 @@ def _headers_with_clearance(
 def _cloudflare_block_message(resp, prefix: str = "被 Cloudflare 拦截", reason: str = "") -> str:
     status = getattr(resp, "status_code", "unknown")
     debug = _response_debug_detail(resp)
-    reason = reason or "clearance 刷新失败或重试后仍失败，请更换 IP/代理重试"
+    reason = reason or "clearance 刷新Thất bại或重试后仍Thất bại，请更换 IP/代理重试"
     return f"{prefix}，{reason}: status={status}, {debug}"
 
 
@@ -425,7 +425,7 @@ class PlatformRegistrar:
             step(index, "Cloudflare clearance 刷新完成，重试当前请求", "yellow")
         else:
             self.clearance_failure_reason = "clearance 刷新未返回可用 Cookie，请检查 FlareSolverr URL、代理和出口 IP"
-            step(index, f"Cloudflare clearance 刷新失败：{self.clearance_failure_reason}", "yellow")
+            step(index, f"Cloudflare clearance 刷新Thất bại：{self.clearance_failure_reason}", "yellow")
         return bundle
 
     def _platform_authorize(self, email: str, index: int) -> None:
@@ -474,7 +474,7 @@ class PlatformRegistrar:
             raise RuntimeError(error or f"platform_authorize_http_{status}{detail}, {debug}")
         landed = _authorize_landed_page(resp)
         # 仅打日志，不据此中断：authorize 落地页无法可靠区分注册/登录，
-        # 真正的判定交给 user/register（失败会 dump 完整响应）。
+        # 真正的判定交给 user/register（Thất bại会 dump 完整响应）。
         step(index, f"platform authorize 完成[{landed or '?'}] url={str(getattr(resp, 'url', '') or '')[:160]}")
 
     def _register_user(self, email: str, password: str, index: int) -> None:
@@ -497,7 +497,7 @@ class PlatformRegistrar:
         if resp is None or resp.status_code != 200:
             data = _response_json(resp) if resp is not None else {}
             if data.get("message") == "Failed to create account. Please try again.":
-                step(index, "注册失败提示: 邮箱域名很可能因滥用被封禁，请更换邮箱域名", "yellow")
+                step(index, "注册Thất bại提示: 邮箱域名很可能因滥用被封禁，请更换邮箱域名", "yellow")
             detail = f", detail={json.dumps(data, ensure_ascii=False)}" if data else ""
             raise RuntimeError(error or f"user_register_http_{getattr(resp, 'status_code', 'unknown')}{detail}")
         step(index, "提交注册密码完成")
@@ -551,7 +551,7 @@ class PlatformRegistrar:
         if resp is None or resp.status_code not in (200, 302):
             data = _response_json(resp) if resp is not None else {}
             if data.get("message") == "Failed to create account. Please try again.":
-                step(index, "创建账号失败提示: 邮箱域名很可能因滥用被封禁，请更换邮箱域名", "yellow")
+                step(index, "创建账号Thất bại提示: 邮箱域名很可能因滥用被封禁，请更换邮箱域名", "yellow")
             detail = f", detail={json.dumps(data, ensure_ascii=False)}" if data else ""
             raise RuntimeError(error or f"create_account_http_{getattr(resp, 'status_code', 'unknown')}{detail}")
         data = _response_json(resp)
@@ -563,7 +563,7 @@ class PlatformRegistrar:
         step(index, "开始换 token")
         tokens = request_platform_oauth_token(self.session, self.platform_auth_code, self.code_verifier)
         if not tokens:
-            raise RuntimeError("token换取失败")
+            raise RuntimeError("token换取Thất bại")
         step(index, "token 换取完成")
         return tokens
 
@@ -628,7 +628,7 @@ def worker(index: int) -> dict:
         with stats_lock:
             stats["done"] += 1
             stats["fail"] += 1
-        log(f"任务{index} 注册失败，本次耗时{cost:.1f}s，原因: {e}", "red")
+        log(f"任务{index} 注册Thất bại，本次耗时{cost:.1f}s，原因: {e}", "red")
         return {"ok": False, "index": index, "error": str(e)}
     finally:
         registrar.close()

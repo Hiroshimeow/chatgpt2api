@@ -20,7 +20,7 @@ import { UserKeysCard } from "./components/user-keys-card";
 import { useSettingsStore } from "./store";
 
 const settingsTabs = [
-  { value: "basic", title: "基础配置" },
+  { value: "basic", title: "基础Cấu hình" },
   { value: "backup", title: "备份" },
   { value: "keys", title: "用户密钥" },
   { value: "api-docs", title: "接口接入" },

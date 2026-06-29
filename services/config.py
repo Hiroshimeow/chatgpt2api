@@ -292,9 +292,9 @@ def _validate_image_storage_settings(settings: dict[str, object]) -> None:
     if not _normalize_bool(settings.get("enabled"), False):
         return
     if not str(settings.get("webdav_url") or "").strip():
-        raise ValueError("启用 WebDAV 图片存储后必须填写 WebDAV URL")
+        raise ValueError("Bật WebDAV 图片存储后必须填写 WebDAV URL")
     if not str(settings.get("webdav_password") or "").strip():
-        raise ValueError("启用 WebDAV 图片存储后必须填写 WebDAV 密码")
+        raise ValueError("Bật WebDAV 图片存储后必须填写 WebDAV 密码")
 
 
 @dataclass(frozen=True)
@@ -333,8 +333,8 @@ def _load_settings() -> LoadedSettings:
     auth_key = _normalize_auth_key(os.getenv("CHATGPT2API_AUTH_KEY") or raw_config.get("auth-key"))
     if _is_invalid_auth_key(auth_key):
         raise ValueError(
-            "❌ auth-key 未设置！\n"
-            "请在环境变量 CHATGPT2API_AUTH_KEY 中设置，或者在 config.json 中填写 auth-key。"
+            "❌ auth-key 未Cài đặt！\n"
+            "请在环境变量 CHATGPT2API_AUTH_KEY 中Cài đặt，或者在 config.json 中填写 auth-key。"
         )
 
     try:
@@ -356,9 +356,9 @@ class ConfigStore:
         self._storage_backend: StorageBackend | None = None
         if _is_invalid_auth_key(self.auth_key):
             raise ValueError(
-                "❌ auth-key 未设置！\n"
+                "❌ auth-key 未Cài đặt！\n"
                 "请按以下任意一种方式解决：\n"
-                "1. 在 Render 的 Environment 变量中添加：\n"
+                "1. 在 Render 的 Environment 变量中Thêm：\n"
                 "   CHATGPT2API_AUTH_KEY = your_real_auth_key\n"
                 "2. 或者在 config.json 中填写：\n"
                 '   "auth-key": "your_real_auth_key"'
@@ -432,7 +432,7 @@ class ConfigStore:
 
     @property
     def image_settle_enabled(self) -> bool:
-        """图片二次确认机制：找到 file_ids 后等待一段时间再次确认。"""
+        """Cơ chế xác nhận ảnh lần hai：找到 file_ids 后等待一段时间再次确认。"""
         value = self.data.get("image_settle_enabled", True)
         if isinstance(value, str):
             return value.strip().lower() in {"1", "true", "yes", "on"}

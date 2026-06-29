@@ -122,7 +122,7 @@ class RegisterService:
         """对 outlook_token provider：把前端新导入的 mailboxes 与已存池按邮箱合并去重。
 
         前端 mailboxes 是只写导入框，留空表示不改动；填入的新行追加/覆盖已存凭据。
-        按数组下标与已存的同类型 provider 对齐。
+        按数组下标与已存的同Loại provider 对齐。
         """
         mail = updates.get("mail")
         if not isinstance(mail, dict) or not isinstance(mail.get("providers"), list):
@@ -185,7 +185,7 @@ class RegisterService:
             self._save()
             self._runner = threading.Thread(target=self._run, daemon=True, name="openai-register")
             self._runner.start()
-            self._append_log(f"注册任务启动，模式={self._config['mode']}，线程数={self._config['threads']}", "yellow")
+            self._append_log(f"注册任务启动，模式={self._config['mode']}，Số luồng={self._config['threads']}", "yellow")
             return self.get()
 
     def stop(self) -> dict:
@@ -218,7 +218,7 @@ class RegisterService:
         cleared = mail_provider.reset_outlook_token_pool_state(scope)
         with self._lock:
             self._append_log(
-                f"已重置 Outlook 邮箱池状态（范围={'仅失败/占用' if scope == 'failed' else '全部'}），清除 {cleared} 条记录",
+                f"已重置 Outlook 邮箱池状态（范围={'仅Thất bại/占用' if scope == 'failed' else '全部'}），清除 {cleared} 条记录",
                 "yellow",
             )
         return self.get()
@@ -242,11 +242,11 @@ class RegisterService:
         self._bump(**metrics)
         if mode == "quota":
             reached = metrics["current_quota"] >= int(cfg.get("target_quota") or 1)
-            self._append_log(f"检查号池：当前正常账号={metrics['current_available']}，当前剩余额度={metrics['current_quota']}，目标额度={cfg.get('target_quota')}，{'跳过注册' if reached else '继续注册'}", "yellow")
+            self._append_log(f"检查号池：当前正常账号={metrics['current_available']}，当前Quota còn lại={metrics['current_quota']}，目标额度={cfg.get('target_quota')}，{'Bỏ qua注册' if reached else '继续注册'}", "yellow")
             return reached
         if mode == "available":
             reached = metrics["current_available"] >= int(cfg.get("target_available") or 1)
-            self._append_log(f"检查号池：当前正常账号={metrics['current_available']}，目标账号={cfg.get('target_available')}，当前剩余额度={metrics['current_quota']}，{'跳过注册' if reached else '继续注册'}", "yellow")
+            self._append_log(f"检查号池：当前正常账号={metrics['current_available']}，目标账号={cfg.get('target_available')}，当前Quota còn lại={metrics['current_quota']}，{'Bỏ qua注册' if reached else '继续注册'}", "yellow")
             return reached
         return submitted >= int(cfg.get("total") or 1)
 
@@ -298,7 +298,7 @@ class RegisterService:
         with self._lock:
             self._config["enabled"] = False
             self._save()
-        self._append_log(f"注册任务结束，成功{success}，失败{fail}", "yellow")
+        self._append_log(f"注册任务结束，成功{success}，Thất bại{fail}", "yellow")
 
 
 register_service = RegisterService(REGISTER_FILE)

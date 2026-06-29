@@ -71,7 +71,7 @@ class GitStorageBackend(StorageBackend):
                 origin.pull(self.branch)
                 return repo
             except GitCommandError:
-                # 拉取失败，删除重新克隆
+                # 拉取Thất bại，删除重新克隆
                 shutil.rmtree(repo_path)
         
         # 克隆仓库

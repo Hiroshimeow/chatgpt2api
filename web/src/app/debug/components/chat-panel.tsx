@@ -35,7 +35,7 @@ function readImage(file: File): Promise<SelectedImage> {
     reader.onload = () => {
       const url = String(reader.result || "");
       if (!url.startsWith("data:image/")) {
-        reject(new Error(`${file.name} 读取失败`));
+        reject(new Error(`${file.name} 读取Thất bại`));
         return;
       }
       resolve({
@@ -45,7 +45,7 @@ function readImage(file: File): Promise<SelectedImage> {
         url,
       });
     };
-    reader.onerror = () => reject(reader.error || new Error(`${file.name} 读取失败`));
+    reader.onerror = () => reject(reader.error || new Error(`${file.name} 读取Thất bại`));
     reader.readAsDataURL(file);
   });
 }

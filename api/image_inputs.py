@@ -50,7 +50,7 @@ def _parse_bool(value: object) -> bool | None:
 
 
 def _parse_count(value: object) -> int:
-    """解析生成数量：保持图片接口的 1 到 4 限制。"""
+    """解析Số lượng tạo：保持图片接口的 1 到 4 限制。"""
     try:
         count = int(value or 1)
     except (TypeError, ValueError) as exc:
@@ -198,7 +198,7 @@ async def parse_image_edit_request(request: Request) -> tuple[dict[str, Any], li
 
 
 def _extension_from_mime(mime_type: str) -> str:
-    """推导图片扩展名：把 MIME 类型转换为常见文件后缀。"""
+    """推导图片扩展名：把 MIME Loại转换为常见文件后缀。"""
     subtype = mime_type.split("/", 1)[1].split("+", 1)[0] if "/" in mime_type else "png"
     if subtype == "jpeg":
         return "jpg"
@@ -235,7 +235,7 @@ def _decode_data_url(url: str) -> ImageInput:
 
 
 def _response_mime_type(response: requests.Response, parsed_path: str) -> str:
-    """识别下载图片类型：优先响应头，必要时按 URL 后缀推断。"""
+    """识别Tải xuống图片Loại：优先响应头，必要时按 URL 后缀推断。"""
     header_type = str(response.headers.get("content-type") or "").split(";", 1)[0].strip().lower()
     guessed_type = mimetypes.guess_type(parsed_path)[0] or ""
     if header_type.startswith("image/"):
@@ -256,7 +256,7 @@ def _filename_from_url(parsed_path: str, mime_type: str) -> str:
 
 
 def _download_image_url(url: str) -> ImageInput:
-    """下载远程图片：把 http/https 图片链接转成标准图片输入元组。"""
+    """Tải xuống远程图片：把 http/https 图片链接转成标准图片输入元组。"""
     source = _clean(url)
     if source.startswith("data:"):
         return _decode_data_url(source)
@@ -288,7 +288,7 @@ def _download_image_url(url: str) -> ImageInput:
 
 
 async def read_image_sources(sources: list[ImageSource]) -> list[ImageInput]:
-    """读取图片来源：上传文件直接读取，URL 下载后统一返回图片元组。"""
+    """读取图片来源：上传文件直接读取，URL Tải xuống后统一返回图片元组。"""
     images: list[ImageInput] = []
     for source in sources:
         if isinstance(source, tuple):

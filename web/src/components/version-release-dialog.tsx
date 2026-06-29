@@ -15,7 +15,7 @@ import { useVersionCheck } from "@/hooks/use-version-check";
 import { cn } from "@/lib/utils";
 
 function typeVariant(type: string): "success" | "danger" | "info" | "violet" | "outline" {
-  if (type === "新增") return "success";
+  if (type === "Thêm mới") return "success";
   if (type === "修复") return "danger";
   if (type === "调整") return "info";
   if (type === "文档") return "violet";

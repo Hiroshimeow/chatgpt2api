@@ -71,7 +71,7 @@ def _openssl_encrypt(data: bytes, passphrase: str) -> bytes:
         raise BackupError("当前环境缺少 openssl，无法执行加密备份") from exc
     except subprocess.CalledProcessError as exc:
         detail = (exc.stderr or b"").decode("utf-8", errors="replace").strip()
-        raise BackupError(f"加密备份失败：{detail or 'openssl 执行失败'}") from exc
+        raise BackupError(f"加密备份Thất bại：{detail or 'openssl 执行Thất bại'}") from exc
     return result.stdout
 
 
@@ -101,7 +101,7 @@ def _openssl_decrypt(data: bytes, passphrase: str) -> bytes:
         raise BackupError("当前环境缺少 openssl，无法解密备份内容") from exc
     except subprocess.CalledProcessError as exc:
         detail = (exc.stderr or b"").decode("utf-8", errors="replace").strip()
-        raise BackupError(f"解密备份失败：{detail or 'openssl 执行失败'}") from exc
+        raise BackupError(f"解密备份Thất bại：{detail or 'openssl 执行Thất bại'}") from exc
     return result.stdout
 
 
@@ -153,7 +153,7 @@ class CloudflareR2Client:
         if not self.bucket:
             missing.append("Bucket")
         if missing:
-            raise BackupError(f"R2 配置不完整：缺少 {'、'.join(missing)}")
+            raise BackupError(f"R2 Cấu hình不完整：缺少 {'、'.join(missing)}")
 
     @property
     def endpoint(self) -> str:
@@ -239,7 +239,7 @@ class CloudflareR2Client:
         self.validate()
         response = self._request("GET", query={"list-type": "2", "max-keys": "1"}, timeout=30.0)
         if response.status_code >= 400:
-            raise BackupError(f"连接 R2 失败：HTTP {response.status_code}")
+            raise BackupError(f"连接 R2 Thất bại：HTTP {response.status_code}")
         return {"ok": True, "status": int(response.status_code)}
 
     def upload_bytes(self, key: str, payload: bytes, *, content_type: str, metadata: dict[str, str] | None = None) -> dict[str, object]:
@@ -249,18 +249,18 @@ class CloudflareR2Client:
                 headers[f"x-amz-meta-{item_key}"] = str(item_value)
         response = self._request("PUT", key, body=payload, extra_headers=headers)
         if response.status_code >= 400:
-            raise BackupError(f"上传备份失败：HTTP {response.status_code}")
+            raise BackupError(f"上传备份Thất bại：HTTP {response.status_code}")
         return {"key": key, "etag": str(response.headers.get("etag") or "").strip('"')}
 
     def delete_object(self, key: str) -> None:
         response = self._request("DELETE", key, timeout=30.0)
         if response.status_code >= 400 and response.status_code != 404:
-            raise BackupError(f"删除备份失败：HTTP {response.status_code}")
+            raise BackupError(f"删除备份Thất bại：HTTP {response.status_code}")
 
     def download_bytes(self, key: str) -> bytes:
         response = self._request("GET", key, timeout=60.0)
         if response.status_code >= 400:
-            raise BackupError(f"读取备份失败：HTTP {response.status_code}")
+            raise BackupError(f"读取备份Thất bại：HTTP {response.status_code}")
         return bytes(response.content or b"")
 
     def list_objects(self) -> list[dict[str, object]]:
@@ -272,7 +272,7 @@ class CloudflareR2Client:
                 query["continuation-token"] = continuation
             response = self._request("GET", query=query, timeout=30.0)
             if response.status_code >= 400:
-                raise BackupError(f"获取备份列表失败：HTTP {response.status_code}")
+                raise BackupError(f"获取备份列表Thất bại：HTTP {response.status_code}")
             text = response.text
             for block in text.split("<Contents>")[1:]:
                 key = _clean(block.split("<Key>", 1)[1].split("</Key>", 1)[0]) if "<Key>" in block else ""
@@ -438,7 +438,7 @@ class BackupService:
         if candidate.endswith(".enc"):
             passphrase = _clean(config.get_backup_settings().get("passphrase"))
             if not passphrase:
-                raise BackupError("当前未配置加密口令，无法下载并解密已加密备份")
+                raise BackupError("当前未Cấu hình加密口令，无法Tải xuống并解密已加密备份")
             payload = _openssl_decrypt(payload, passphrase)
             if name.endswith(".enc"):
                 name = name[:-4] or "backup.tar.gz"
@@ -510,7 +510,7 @@ class BackupService:
         if encrypted:
             passphrase = _clean(settings.get("passphrase"))
             if not passphrase:
-                raise BackupError("已启用备份加密，但未设置加密口令")
+                raise BackupError("已Bật备份加密，但未Cài đặt加密口令")
             payload = _openssl_encrypt(payload_raw, passphrase)
             suffix = ".tar.gz.enc"
         else:
@@ -540,7 +540,7 @@ class BackupService:
         if key.endswith(".enc"):
             passphrase = _clean(config.get_backup_settings().get("passphrase"))
             if not passphrase:
-                raise BackupError("当前未配置加密口令，无法查看已加密备份")
+                raise BackupError("当前未Cấu hình加密口令，无法查看已加密备份")
             decoded = _openssl_decrypt(decoded, passphrase)
         return self._decode_archive_detail(decoded)
 
@@ -596,7 +596,7 @@ class BackupService:
                         "sha256": _sha256_hex(raw),
                     })
         except tarfile.TarError as exc:
-            raise BackupError("解析备份压缩包失败，备份可能已损坏") from exc
+            raise BackupError("解析备份压缩包Thất bại，备份可能已损坏") from exc
         files.sort(key=lambda item: str(item.get("name") or ""))
         snapshots.sort(key=lambda item: str(item.get("name") or ""))
         return {

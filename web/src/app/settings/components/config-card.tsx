@@ -48,7 +48,7 @@ export function ConfigCard() {
   const handleTestProxy = async () => {
     const candidate = String(config?.proxy || "").trim();
     if (!candidate) {
-      toast.error("请先填写代理地址");
+      toast.error("Hãy nhập địa chỉ proxy trước");
       return;
     }
     setIsTestingProxy(true);
@@ -57,12 +57,12 @@ export function ConfigCard() {
       const data = await testProxy(candidate);
       setProxyTestResult(data.result);
       if (data.result.ok) {
-        toast.success(`代理可用（${data.result.latency_ms} ms，HTTP ${data.result.status}）`);
+        toast.success(`Proxy khả dụng（${data.result.latency_ms} ms，HTTP ${data.result.status}）`);
       } else {
-        toast.error(`代理不可用：${data.result.error ?? "未知错误"}`);
+        toast.error(`Proxy không khả dụng：${data.result.error ?? "Không rõ错误"}`);
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "测试代理失败");
+      toast.error(error instanceof Error ? error.message : "Test proxyThất bại");
     } finally {
       setIsTestingProxy(false);
     }
@@ -82,21 +82,21 @@ export function ConfigCard() {
     <Card className="rounded-2xl border-white/80 bg-white/90 shadow-sm">
       <CardContent className="space-y-4 p-6">
         <div className="rounded-xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm leading-6 text-stone-600">
-          管理员登录密钥继续从部署配置读取，不再在此页面展示；如需分发给其他人，请在下方创建普通用户密钥。
+          Khóa đăng nhập admin vẫn đọc từ cấu hình triển khai và không hiển thị ở trang này; nếu cần cấp cho người khác, hãy tạo user key thường bên dưới.
         </div>
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
-            <label className="text-sm text-stone-700">账号刷新间隔</label>
+            <label className="text-sm text-stone-700">Khoảng refresh tài khoản</label>
             <Input
               value={String(config?.refresh_account_interval_minute || "")}
               onChange={(event) => setRefreshAccountIntervalMinute(event.target.value)}
-              placeholder="分钟"
+              placeholder="phút"
               className="h-10 rounded-xl border-stone-200 bg-white"
             />
-            <p className="text-xs text-stone-500">单位分钟，控制账号自动刷新频率。</p>
+            <p className="text-xs text-stone-500">单位phút，控制账号自动刷新频率。</p>
           </div>
           <div className="space-y-2">
-            <label className="text-sm text-stone-700">全局代理</label>
+            <label className="text-sm text-stone-700">Proxy toàn cục</label>
             <Input
               value={String(config?.proxy || "")}
               onChange={(event) => {
@@ -107,7 +107,7 @@ export function ConfigCard() {
               className="h-10 rounded-xl border-stone-200 bg-white"
             />
             <p className="text-xs leading-5 text-stone-500">
-              留空表示不使用代理。支持协议://账号:密码@主机:端口，也可直接粘贴代理商的 主机:端口:账号:密码；示例 http://user:pass@127.0.0.1:7890、127.0.0.1:7890:user:pass。账号密码含 @/: 等特殊字符时需 URL 编码。
+              Để trống nếu không dùng proxy.支持协议://账号:密码@主机:端口，也可直接粘贴代理商的 主机:端口:账号:密码；示例 http://user:pass@127.0.0.1:7890、127.0.0.1:7890:user:pass。账号密码含 @/: 等特殊字符时需 URL 编码。
             </p>
             {proxyTestResult ? (
               <div
@@ -118,8 +118,8 @@ export function ConfigCard() {
                 }`}
               >
                 {proxyTestResult.ok
-                  ? `代理可用：HTTP ${proxyTestResult.status}，用时 ${proxyTestResult.latency_ms} ms`
-                  : `代理不可用：${proxyTestResult.error ?? "未知错误"}（用时 ${proxyTestResult.latency_ms} ms）`}
+                  ? `Proxy khả dụng：HTTP ${proxyTestResult.status}，用时 ${proxyTestResult.latency_ms} ms`
+                  : `Proxy không khả dụng：${proxyTestResult.error ?? "Không rõ错误"}（用时 ${proxyTestResult.latency_ms} ms）`}
               </div>
             ) : null}
             <div className="flex justify-end">
@@ -131,49 +131,49 @@ export function ConfigCard() {
                 disabled={isTestingProxy}
               >
                 {isTestingProxy ? <LoaderCircle className="size-4 animate-spin" /> : <PlugZap className="size-4" />}
-                测试代理
+                Test proxy
               </Button>
             </div>
           </div>
           <div className="space-y-2">
-            <label className="text-sm text-stone-700">图片访问地址</label>
+            <label className="text-sm text-stone-700">Địa chỉ truy cập ảnh</label>
             <Input
               value={String(config?.base_url || "")}
               onChange={(event) => setBaseUrl(event.target.value)}
               placeholder="https://example.com"
               className="h-10 rounded-xl border-stone-200 bg-white"
             />
-            <p className="text-xs text-stone-500">用于生成图片结果的访问前缀地址。</p>
+            <p className="text-xs text-stone-500">Prefix URL dùng cho kết quả ảnh.</p>
           </div>
           <div className="space-y-2">
-            <label className="text-sm text-stone-700">图片自动清理</label>
+            <label className="text-sm text-stone-700">Tự động dọn ảnh</label>
             <Input
               value={String(config?.image_retention_days || "")}
               onChange={(event) => setImageRetentionDays(event.target.value)}
               placeholder="30"
               className="h-10 rounded-xl border-stone-200 bg-white"
             />
-            <p className="text-xs text-stone-500">自动删除多少天前的本地图片。</p>
+            <p className="text-xs text-stone-500">Tự động xóa ảnh local cũ hơn số ngày này.</p>
           </div>
           <div className="space-y-2">
-            <label className="text-sm text-stone-700">图片轮询超时</label>
+            <label className="text-sm text-stone-700">Timeout poll ảnh</label>
             <Input
               value={String(config?.image_poll_timeout_secs || "")}
               onChange={(event) => setImagePollTimeoutSecs(event.target.value)}
               placeholder="120"
               className="h-10 rounded-xl border-stone-200 bg-white"
             />
-            <p className="text-xs text-stone-500">单位秒，等待上游图片结果的最长时间。</p>
+            <p className="text-xs text-stone-500">Đơn vị giây, thời gian tối đa chờ ảnh từ upstream.</p>
           </div>
           <div className="space-y-2">
-            <label className="text-sm text-stone-700">单账号图片并发</label>
+            <label className="text-sm text-stone-700">Số request ảnh song song mỗi tài khoản</label>
             <Input
               value={String(config?.image_account_concurrency || "")}
               onChange={(event) => setImageAccountConcurrency(event.target.value)}
               placeholder="1"
               className="h-10 rounded-xl border-stone-200 bg-white"
             />
-            <p className="text-xs text-stone-500">限制每个账号同时处理的图片请求数量，默认 3。</p>
+            <p className="text-xs text-stone-500">Giới hạn số request ảnh xử lý đồng thời trên mỗi tài khoản, mặc định 3.</p>
           </div>
           <div className="space-y-2">
             <label className="flex items-center gap-3 rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-700">
@@ -181,9 +181,9 @@ export function ConfigCard() {
                 checked={Boolean(config?.auto_remove_invalid_accounts)}
                 onCheckedChange={(checked) => setAutoRemoveInvalidAccounts(Boolean(checked))}
               />
-              自动移除异常账号
+              Tự động xóa tài khoản lỗi
             </label>
-            <p className="text-xs text-stone-500">刷新时检测并移除</p>
+            <p className="text-xs text-stone-500">Kiểm tra và xóa khi refresh</p>
           </div>
           <div className="space-y-2">
             <div className="flex items-center gap-3 rounded-xl border border-stone-200 bg-white px-4 py-3">
@@ -191,12 +191,12 @@ export function ConfigCard() {
                 checked={Boolean(config?.image_settle_enabled !== false)}
                 onCheckedChange={(checked) => setImageSettleEnabled(Boolean(checked))}
               />
-              <span className="text-sm text-stone-700">图片二次确认机制</span>
+              <span className="text-sm text-stone-700">Cơ chế xác nhận ảnh lần hai</span>
             </div>
-            <p className="text-xs text-stone-500">打开后能稍微提升获取图片的成功率。</p>
+            <p className="text-xs text-stone-500">Bật lên có thể tăng nhẹ tỷ lệ lấy ảnh thành công.</p>
           </div>
           <div className="space-y-2">
-            <label className="text-sm text-stone-700">图片超时继续等待时间</label>
+            <label className="text-sm text-stone-700">Thời gian chờ thêm sau timeout ảnh</label>
             <Input
               value={String(config?.image_timeout_retry_secs || "30")}
               onChange={(event) => setImageTimeoutRetrySecs(event.target.value)}
@@ -206,7 +206,7 @@ export function ConfigCard() {
             <p className="text-xs text-stone-500">单位秒，超时后点击"继续等待"额外等待的时间。</p>
           </div>
           <div className="space-y-2">
-            <label className="text-sm text-stone-700">图片二次确认等待时间</label>
+            <label className="text-sm text-stone-700">Thời gian chờ xác nhận ảnh lần hai</label>
             <Input
               value={String(config?.image_settle_secs || "2.0")}
               onChange={(event) => setImageSettleSecs(event.target.value)}
@@ -214,7 +214,7 @@ export function ConfigCard() {
               className="h-10 rounded-xl border-stone-200 bg-white disabled:cursor-not-allowed disabled:opacity-50"
               disabled={!config?.image_settle_enabled}
             />
-            <p className="text-xs text-stone-500">单位秒，找到图片后等待多久再次确认。需配合图片二次确认机制使用。</p>
+            <p className="text-xs text-stone-500">单位秒，找到图片后等待多久再次确认。需配合Cơ chế xác nhận ảnh lần hai使用。</p>
           </div>
           <div className="flex gap-4 md:col-span-2">
             <div className="flex-1 space-y-2">
@@ -280,7 +280,7 @@ export function ConfigCard() {
                   checked={Boolean(config?.image_storage?.enabled)}
                   onCheckedChange={(checked) => setImageStorageField("enabled", Boolean(checked))}
                 />
-                启用 WebDAV 图片存储
+                Bật WebDAV 图片存储
               </label>
               <div className="flex flex-wrap gap-2">
                 <Button
@@ -313,11 +313,11 @@ export function ConfigCard() {
               <span className="ml-1 font-medium text-stone-900">
                 {config?.image_storage?.enabled
                   ? config.image_storage.mode === "both"
-                    ? "本机 + WebDAV"
+                    ? "Máy local + WebDAV"
                     : config.image_storage.mode === "webdav"
                       ? "仅 WebDAV"
-                      : "仅本机"
-                  : "仅本机"}
+                      : "仅Máy local"
+                  : "仅Máy local"}
               </span>
               <span className="ml-2 text-stone-400">修改后需要点保存，或通过测试/同步按钮自动保存。</span>
             </div>
@@ -333,9 +333,9 @@ export function ConfigCard() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="local">仅本机</SelectItem>
+                    <SelectItem value="local">仅Máy local</SelectItem>
                     <SelectItem value="webdav">仅 WebDAV</SelectItem>
-                    <SelectItem value="both">本机 + WebDAV</SelectItem>
+                    <SelectItem value="both">Máy local + WebDAV</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -397,10 +397,10 @@ export function ConfigCard() {
                 checked={Boolean(config?.ai_review?.enabled)}
                 onCheckedChange={(checked) => setAIReviewField("enabled", Boolean(checked))}
               />
-              启用 AI 审核
+              Bật AI 审核
             </label>
             <p className="text-xs leading-6 text-stone-500">
-              开启后会在请求进入生图账号前先调用审核模型，审核不通过会直接拒绝，减少违规提示词触达账号造成风控或封号的风险。
+              开启后会在请求进入Tạo ảnh账号前先调用审核模型，审核不通过会直接拒绝，减少违规提示词触达账号造成风控或封号的风险。
             </p>
             <div className="grid gap-4 md:grid-cols-3">
               <div className="space-y-2">

@@ -21,7 +21,7 @@ type ApiDoc = {
 
 const docs: ApiDoc[] = [
   {
-    title: "模型列表",
+    title: "Danh sách model",
     method: "GET",
     path: "/v1/models",
     icon: ListChecks,
@@ -29,24 +29,24 @@ const docs: ApiDoc[] = [
       ["Authorization", "header", "Bearer <auth-key>。"],
     ],
     output: [
-      ["data", "array", "模型列表，包含 id、object、created、owned_by。"],
+      ["data", "array", "Danh sách model，包含 id、object、created、owned_by。"],
     ],
     example: (baseUrl: string, key: string) => `curl ${baseUrl}/models \\
   -H "Authorization: Bearer ${key}"`,
   },
   {
-    title: "聊天补全",
+    title: "Chat completion",
     method: "POST",
     path: "/v1/chat/completions",
     icon: FileText,
     input: [
-      ["model", "string", "模型名，例如 gpt-5-mini，也可用于图片兼容场景。"],
+      ["model", "string", "Tên model，例如 gpt-5-mini，也可用于图片兼容场景。"],
       ["messages", "array", "OpenAI 兼容消息数组。"],
       ["stream", "boolean", "可选，是否流式返回。"],
-      ["n", "number", "可选，图片兼容场景会解析为生成数量。"],
+      ["n", "number", "可选，图片兼容场景会解析为Số lượng tạo。"],
     ],
     output: [
-      ["id", "string", "响应 ID。"],
+      ["id", "string", "Response ID。"],
       ["choices", "array", "OpenAI 兼容 choices。"],
       ["usage", "object", "可选，token 使用信息。"],
     ],
@@ -61,13 +61,13 @@ const docs: ApiDoc[] = [
     path: "/v1/responses",
     icon: FileText,
     input: [
-      ["model", "string", "模型名。"],
-      ["input", "string | array | object", "用户输入，图片生成会从中解析提示词。"],
+      ["model", "string", "Tên model。"],
+      ["input", "string | array | object", "用户输入，Tạo ảnh会从中解析提示词。"],
       ["tools", "array", "可选，Responses 工具定义。"],
       ["stream", "boolean", "可选，是否流式返回。"],
     ],
     output: [
-      ["id", "string", "响应 ID。"],
+      ["id", "string", "Response ID。"],
       ["output", "array", "Responses 兼容输出。"],
       ["status", "string", "响应状态。"],
     ],
@@ -77,40 +77,40 @@ const docs: ApiDoc[] = [
   -d '{"model":"gpt-5-mini","input":"生成一张未来城市图片"}'`,
   },
   {
-    title: "搜索",
+    title: "Tìm kiếm",
     method: "POST",
     path: "/v1/search",
     icon: ListChecks,
     input: [
-      ["prompt", "string", "搜索问题或检索指令。"],
+      ["prompt", "string", "Tìm kiếm问题或检索指令。"],
     ],
     output: [
-      ["answer", "string", "搜索后的回答内容，具体字段以返回结果为准。"],
-      ["sources", "array", "可选，搜索引用来源。"],
-      ["_account_email", "string", "本次使用的账号邮箱。"],
+      ["answer", "string", "Tìm kiếm后的回答内容，具体字段以返回结果为准。"],
+      ["sources", "array", "可选，Tìm kiếm引用来源。"],
+      ["_account_email", "string", "Email tài khoản dùng lần này。"],
     ],
     example: (baseUrl: string, key: string) => `curl ${baseUrl}/search \\
   -H "Content-Type: application/json" \\
   -H "Authorization: Bearer ${key}" \\
-  -d '{"prompt":"搜索 chatgpt2api 最新使用方式"}'`,
+  -d '{"prompt":"Tìm kiếm chatgpt2api 最新使用方式"}'`,
   },
   {
-    title: "图片生成",
+    title: "Tạo ảnh",
     method: "POST",
     path: "/v1/images/generations",
     icon: FileArchive,
     input: [
-      ["prompt", "string", "图片生成提示词。"],
+      ["prompt", "string", "Tạo ảnh提示词。"],
       ["model", "string", "可选，默认 gpt-image-2。"],
-      ["n", "number", "可选，生成数量，当前限制 1-4。"],
-      ["size", "string", "可选，图片尺寸。"],
+      ["n", "number", "可选，Số lượng tạo，当前限制 1-4。"],
+      ["size", "string", "可选，Kích thước ảnh。"],
       ["quality", "string", "可选，默认 auto。"],
       ["response_format", "string", "可选，默认 b64_json。"],
     ],
     output: [
       ["data", "array", "图片结果列表。"],
-      ["data[].b64_json", "string", "base64 图片内容。"],
-      ["data[].url", "string", "部分配置下返回图片 URL。"],
+      ["data[].b64_json", "string", "base64 Nội dung ảnh。"],
+      ["data[].url", "string", "部分Cấu hình下返回图片 URL。"],
     ],
     example: (baseUrl: string, key: string) => `curl ${baseUrl}/images/generations \\
   -H "Content-Type: application/json" \\
@@ -126,14 +126,14 @@ const docs: ApiDoc[] = [
       ["image", "file | file[] | URL", "参考图，支持 multipart 上传，也支持 JSON 图片链接。"],
       ["prompt", "string", "编辑提示词。"],
       ["model", "string", "可选，默认 gpt-image-2。"],
-      ["n", "number", "可选，生成数量，当前限制 1-4。"],
-      ["size", "string", "可选，图片尺寸。"],
+      ["n", "number", "可选，Số lượng tạo，当前限制 1-4。"],
+      ["size", "string", "可选，Kích thước ảnh。"],
       ["quality", "string", "可选，默认 auto。"],
     ],
     output: [
       ["data", "array", "编辑后的图片结果列表。"],
-      ["data[].b64_json", "string", "base64 图片内容。"],
-      ["data[].url", "string", "部分配置下返回图片 URL。"],
+      ["data[].b64_json", "string", "base64 Nội dung ảnh。"],
+      ["data[].url", "string", "部分Cấu hình下返回图片 URL。"],
     ],
     example: (baseUrl: string, key: string) => `curl ${baseUrl}/images/edits \\
   -H "Authorization: Bearer ${key}" \\
@@ -152,9 +152,9 @@ const docs: ApiDoc[] = [
       ["client_task_id", "string", "可选，客户端幂等任务 ID；重复提交同 ID 会返回已有任务。"],
     ],
     output: [
-      ["id / taskId", "string", "任务 ID，用于轮询状态。"],
-      ["status", "queued | running | success | error", "任务状态。"],
-      ["kind", "ppt", "任务类型。"],
+      ["id / taskId", "string", "Task ID dùng để poll trạng thái."],
+      ["status", "queued | running | success | error", "Trạng thái task。"],
+      ["kind", "ppt", "任务Loại。"],
       ["created_at / updated_at", "string", "任务创建和更新时间。"],
     ],
     example: (baseUrl: string, key: string) => `curl ${baseUrl}/ppt/generations \\
@@ -173,10 +173,10 @@ const docs: ApiDoc[] = [
       ["client_task_id", "string", "可选，客户端幂等任务 ID。"],
     ],
     output: [
-      ["id / taskId", "string", "任务 ID，用于轮询状态。"],
-      ["status", "queued | running | success | error", "任务状态。"],
-      ["kind", "psd", "任务类型。"],
-      ["error", "string", "失败时返回错误信息。"],
+      ["id / taskId", "string", "Task ID dùng để poll trạng thái."],
+      ["status", "queued | running | success | error", "Trạng thái task。"],
+      ["kind", "psd", "任务Loại。"],
+      ["error", "string", "Thất bại时返回错误信息。"],
     ],
     example: (baseUrl: string, key: string) => `curl ${baseUrl}/psd/generations \\
   -H "Content-Type: application/json" \\
@@ -184,7 +184,7 @@ const docs: ApiDoc[] = [
   -d '{"prompt":"按原图位置拆分海报元素并合成可编辑 PSD","base64_images":["data:image/png;base64,..."]}'`,
   },
   {
-    title: "任务状态查询",
+    title: "Trạng thái taskTruy vấn",
     method: "GET",
     path: "/v1/editable-file-tasks?ids={taskId1,taskId2}",
     icon: ListChecks,
@@ -193,15 +193,15 @@ const docs: ApiDoc[] = [
     ],
     output: [
       ["items", "array", "任务列表。成功任务的 result 内包含 primary_url 和 zip_url。"],
-      ["missing_ids", "string[]", "查询指定 ids 时，返回未找到的任务 ID。"],
-      ["result.primary_url", "string", "主文件下载地址。"],
-      ["result.zip_url", "string", "素材 zip 下载地址。"],
+      ["missing_ids", "string[]", "Truy vấn指定 ids 时，返回未找到的任务 ID。"],
+      ["result.primary_url", "string", "主文件Tải xuống地址。"],
+      ["result.zip_url", "string", "素材 zip Tải xuống地址。"],
     ],
     example: (baseUrl: string, key: string) => `curl "${baseUrl}/editable-file-tasks?ids=<task_id>" \\
   -H "Authorization: Bearer ${key}"`,
   },
   {
-    title: "结果文件下载",
+    title: "结果文件Tải xuống",
     method: "GET",
     path: "/files/{file_path}",
     icon: FileArchive,
@@ -224,7 +224,7 @@ function ParamTable({ rows }: { rows: ParamRow[] }) {
         <thead className="bg-stone-50 text-stone-500">
           <tr>
             <th className="px-3 py-2 font-medium">参数</th>
-            <th className="px-3 py-2 font-medium">类型</th>
+            <th className="px-3 py-2 font-medium">Loại</th>
             <th className="px-3 py-2 font-medium">说明</th>
           </tr>
         </thead>

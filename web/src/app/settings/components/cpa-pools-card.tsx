@@ -28,14 +28,14 @@ export function CPAPoolsCard() {
             </div>
             <div>
               <h2 className="text-lg font-semibold tracking-tight">CPA 连接管理</h2>
-              <p className="text-sm text-stone-500">先配置连接，再按需查询远程账号并选择导入到本地号池。</p>
+              <p className="text-sm text-stone-500">先Cấu hình连接，再按需Truy vấn远程账号并选择导入到本地号池。</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             {pools.length > 0 ? <Badge className="rounded-md px-2.5 py-1">{pools.length} 个连接</Badge> : null}
             <Button className="h-9 rounded-xl bg-stone-950 px-4 text-white hover:bg-stone-800" onClick={openAddDialog}>
               <Plus className="size-4" />
-              添加连接
+              Thêm连接
             </Button>
           </div>
         </div>
@@ -49,7 +49,7 @@ export function CPAPoolsCard() {
             <ServerCog className="size-8 text-stone-300" />
             <div className="space-y-1">
               <p className="text-sm font-medium text-stone-600">暂无 CPA 连接</p>
-              <p className="text-sm text-stone-400">点击「添加连接」保存你的 CLIProxyAPI 信息。</p>
+              <p className="text-sm text-stone-400">点击「Thêm连接」保存你的 CLIProxyAPI 信息。</p>
             </div>
           </div>
         ) : (
@@ -140,10 +140,10 @@ export function CPAPoolsCard() {
                           <div className="h-full rounded-full bg-stone-900 transition-all" style={{ width: `${progress}%` }} />
                         </div>
                         <div className="mt-2 flex flex-wrap gap-2 text-xs text-stone-500">
-                          <span>新增 {importJob.added}</span>
-                          <span>跳过 {importJob.skipped}</span>
+                          <span>Thêm mới {importJob.added}</span>
+                          <span>Bỏ qua {importJob.skipped}</span>
                           <span>刷新 {importJob.refreshed}</span>
-                          <span>失败 {importJob.failed}</span>
+                          <span>Thất bại {importJob.failed}</span>
                         </div>
                       </div>
                     </div>
@@ -155,11 +155,11 @@ export function CPAPoolsCard() {
         )}
 
         <div className="rounded-xl bg-stone-50 px-4 py-3 text-sm leading-6 text-stone-500">
-          <p className="font-medium text-stone-600">使用说明</p>
+          <p className="font-medium text-stone-600">Hướng dẫn sử dụng</p>
           <ul className="mt-1 list-inside list-disc space-y-0.5">
-            <li>页面进入后先读取系统里已配置的 CPA 连接。</li>
+            <li>页面进入后先读取系统里已Cấu hình的 CPA 连接。</li>
             <li>点击某个连接的「同步」后，会先读取远程账号列表并展示给前端选择。</li>
-            <li>确认选择后，后端后台下载对应 access_token 并导入本地号池。</li>
+            <li>确认选择后，后端后台Tải xuống对应 access_token 并导入本地号池。</li>
             <li>前端只轮询导入进度，不直接参与 download。</li>
           </ul>
         </div>

@@ -59,7 +59,7 @@ export function useVersionCheck() {
       } catch {
         setLatestVersion(currentVersion);
         setReleases(localReleases);
-        if (showMessage) toast.error("获取最新版本信息失败");
+        if (showMessage) toast.error("获取最新版本信息Thất bại");
       } finally {
         setChecking(false);
       }

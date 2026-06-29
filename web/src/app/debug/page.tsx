@@ -12,8 +12,8 @@ import { SearchPanel } from "./components/search-panel";
 import { SkillPanel } from "./components/skill-panel";
 
 const tabs = [
-  { value: "skills", title: "搜索Skills" },
-  { value: "search", title: "搜索" },
+  { value: "skills", title: "Tìm kiếmSkills" },
+  { value: "search", title: "Tìm kiếm" },
   { value: "ppt", title: "PPT生成" },
   { value: "psd", title: "PSD生成" },
   { value: "chat", title: "对话" },

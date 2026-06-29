@@ -10,7 +10,7 @@ import os
 import sys
 from pathlib import Path
 
-# 添加项目根目录到 Python 路径
+# Thêm项目根目录到 Python 路径
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 DATA_DIR = Path(__file__).resolve().parents[1] / "data"
@@ -19,13 +19,13 @@ from services.storage.factory import create_storage_backend
 
 
 def test_storage():
-    """测试当前配置的存储后端"""
+    """测试当前Cấu hình的存储后端"""
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     print("=" * 60)
     print("ChatGPT2API 存储后端测试")
     print("=" * 60)
     
-    # 显示当前配置
+    # 显示当前Cấu hình
     backend_type = os.getenv("STORAGE_BACKEND", "json")
     print(f"\n当前存储后端: {backend_type}")
     
@@ -63,7 +63,7 @@ def test_storage():
         # 获取后端信息
         print("\n[2/5] 获取后端信息...")
         info = storage.get_backend_info()
-        print(f"✅ 后端类型: {info.get('type')}")
+        print(f"✅ 后端Loại: {info.get('type')}")
         print(f"   描述: {info.get('description')}")
         for key, value in info.items():
             if key not in ('type', 'description'):
@@ -95,7 +95,7 @@ def test_storage():
             "email": "test@example.com",
         }
         
-        # 添加测试账号
+        # Thêm测试账号
         test_accounts = accounts + [test_account]
         storage.save_accounts(test_accounts)
         print("✅ 写入测试账号成功")
@@ -105,7 +105,7 @@ def test_storage():
         if len(reloaded) == len(test_accounts):
             print("✅ 验证写入成功")
         else:
-            print(f"❌ 验证失败: 期望 {len(test_accounts)} 个账号，实际 {len(reloaded)} 个")
+            print(f"❌ 验证Thất bại: 期望 {len(test_accounts)} 个账号，实际 {len(reloaded)} 个")
             return False
         
         # 恢复原始数据
@@ -118,7 +118,7 @@ def test_storage():
         return True
         
     except Exception as e:
-        print(f"\n❌ 测试失败: {e}")
+        print(f"\n❌ 测试Thất bại: {e}")
         import traceback
         traceback.print_exc()
         return False

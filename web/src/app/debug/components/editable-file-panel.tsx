@@ -33,7 +33,7 @@ const MAX_HISTORY = 20;
 const DRAFT_ID = "__draft__";
 const taskIdOf = (task: EditableFileTask | null | undefined) => task?.taskId || task?.id || "";
 const isRunning = (task: EditableFileTask | null | undefined) => task?.status === "queued" || task?.status === "running";
-const statusText = (status: string) => ({ queued: "排队中", running: "生成中", success: "已完成", error: "失败" }[status] || status);
+const statusText = (status: string) => ({ queued: "排队中", running: "生成中", success: "已完成", error: "Thất bại" }[status] || status);
 const statusClass = (status: string) => status === "success" ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/20 dark:text-emerald-300" : status === "error" ? "border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-900/60 dark:bg-rose-950/20 dark:text-rose-300" : "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/60 dark:bg-amber-950/20 dark:text-amber-300";
 const formatElapsed = (seconds: number) => `${Math.floor(seconds / 60)}m ${String(seconds % 60).padStart(2, "0")}s`;
 const titleOfPrompt = (prompt: string, fallback: string) => prompt.trim().replace(/\s+/g, " ").slice(0, 24) || fallback;
@@ -84,7 +84,7 @@ function ResultFile({ href, icon, label }: { href?: string; icon: ReactNode; lab
         <div className="truncate text-xs text-stone-500 dark:text-stone-400">{fileNameOf(href)}</div>
       </div>
       <Button size="sm" asChild>
-        <a href={href} target="_blank" rel="noreferrer">下载</a>
+        <a href={href} target="_blank" rel="noreferrer">Tải xuống</a>
       </Button>
     </div>
   );
@@ -277,7 +277,7 @@ export function EditableFilePanel({ title, kind, endpoint, defaultPrompt, imageR
         <div className="flex h-14 items-center justify-between border-b border-stone-200 px-4 dark:border-white/10">
           <div className="flex items-center gap-2 text-sm font-semibold text-stone-950 dark:text-stone-50">
             <History className="size-4" />
-            历史记录
+            Lịch sử
           </div>
           <div className="flex gap-1">
             <Button size="sm" variant="ghost" onClick={createDraft}>
@@ -428,13 +428,13 @@ export function EditableFilePanel({ title, kind, endpoint, defaultPrompt, imageR
     <Dialog open={!!deleteConfirm} onOpenChange={(open) => !open && setDeleteConfirm(null)}>
       <DialogContent className="rounded-xl" showCloseButton={false}>
         <DialogHeader>
-          <DialogTitle>{deleteConfirm?.type === "all" ? "清空历史记录" : "删除历史记录"}</DialogTitle>
+          <DialogTitle>{deleteConfirm?.type === "all" ? "Xóa lịch sử" : "删除Lịch sử"}</DialogTitle>
           <DialogDescription>
-            {deleteConfirm?.type === "all" ? "确认清空当前类型的历史记录吗？" : "确认删除这条历史记录吗？"}
+            {deleteConfirm?.type === "all" ? "确认清空当前Loại的Lịch sử吗？" : "确认删除这条Lịch sử吗？"}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="outline" onClick={() => setDeleteConfirm(null)}>取消</Button>
+          <Button variant="outline" onClick={() => setDeleteConfirm(null)}>Hủy</Button>
           <Button variant="destructive" onClick={confirmDelete}>确认删除</Button>
         </DialogFooter>
       </DialogContent>

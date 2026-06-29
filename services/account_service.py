@@ -117,13 +117,72 @@ class AccountService:
         tz = timezone(timedelta(hours=8))
         return datetime.fromtimestamp(ts, tz=timezone.utc).astimezone(tz).isoformat()
 
+    @staticmethod
+    def _session_json_file() -> Path:
+        from services.config import DATA_DIR
+        return DATA_DIR / "session.json"
+
+    def _load_session_json_accounts(self) -> list[dict]:
+        """Load a ChatGPT web session JSON copied from /api/auth/session.
+
+        This intentionally reads only local data/session.json and never logs token values.
+        Expected input shape is the raw JSON object containing accessToken/access_token.
+        """
+        path = self._session_json_file()
+        try:
+            if not path.exists() or path.stat().st_size <= 0:
+                return []
+            data = json.loads(path.read_text(encoding="utf-8-sig"))
+        except Exception as exc:
+            log_service.add(
+                LOG_TYPE_ACCOUNT,
+                "session.json load failed",
+                {"path": str(path), "error": str(exc)},
+            )
+            return []
+        if not isinstance(data, dict):
+            return []
+
+        access_token = str(data.get("access_token") or data.get("accessToken") or "").strip()
+        if not access_token:
+            return []
+
+        user = data.get("user") if isinstance(data.get("user"), dict) else {}
+        account: dict[str, Any] = {
+            "access_token": access_token,
+            "source_type": "session_json",
+        }
+
+        refresh_token = str(data.get("refresh_token") or data.get("refreshToken") or "").strip()
+        if refresh_token:
+            account["refresh_token"] = refresh_token
+        id_token = str(data.get("id_token") or data.get("idToken") or "").strip()
+        if id_token:
+            account["id_token"] = id_token
+        email = str(data.get("email") or user.get("email") or "").strip()
+        if email:
+            account["email"] = email
+        return [account]
+
     def _load_accounts(self) -> dict[str, dict]:
-        accounts = self.storage.load_accounts()
+        accounts = [*self.storage.load_accounts(), *self._load_session_json_accounts()]
         return {
             normalized["access_token"]: normalized
             for item in accounts
             if (normalized := self._normalize_account(item)) is not None
         }
+
+    def _merge_session_json_accounts_locked(self) -> int:
+        added = 0
+        for item in self._load_session_json_accounts():
+            normalized = self._normalize_account(item)
+            if normalized is None:
+                continue
+            access_token = normalized["access_token"]
+            if access_token not in self._accounts:
+                self._accounts[access_token] = normalized
+                added += 1
+        return added
 
     def _save_accounts(self) -> None:
         self.storage.save_accounts(list(self._accounts.values()))
@@ -319,7 +378,7 @@ class AccountService:
                 self._save_accounts()
         log_service.add(
             LOG_TYPE_ACCOUNT,
-            "refresh_token 刷新 access_token 失败",
+            "refresh_token 刷新 access_token Thất bại",
             {"source": event, "token": anonymize_token(access_token), "error": str(error or "")},
         )
 
@@ -432,7 +491,7 @@ class AccountService:
 
         log_service.add(
             LOG_TYPE_ACCOUNT,
-            "refresh_token 已刷新 access_token",
+            "refresh_token Đã refresh access_token",
             {"source": event, "token": anonymize_token(new_token), "rotated": rotated},
         )
         return new_token
@@ -514,7 +573,7 @@ class AccountService:
                 if progress_id:
                     self.update_relogin_progress(progress_id, access_token, "成功")
             else:
-                # 登录失败
+                # 登录Thất bại
                 error_type = result.get("error", "")
                 if error_type == "password_verify_failed_403" and isinstance(result.get("detail"), dict):
                     log_service.add(
@@ -524,14 +583,14 @@ class AccountService:
                             "source": event,
                             "token": anonymize_token(access_token),
                             "email": email,
-                            "status": "失败",
+                            "status": "Thất bại",
                             "error": error_type,
                             "detail": result.get("detail", {}),
                         },
                     )
                     detail_error = result["detail"].get("error", {})
                     if isinstance(detail_error, dict) and detail_error.get("code") == "account_deactivated":
-                        # 账号已删除/停用 → 标记为禁用
+                        # 账号Đã xóa/停用 → 标记为禁用
                         self.update_account(access_token, {"status": "禁用", "quota": 0}, quiet=True)
                         account = self.get_account(access_token) or {}
                         log_service.add(
@@ -559,7 +618,7 @@ class AccountService:
                             "source": event,
                             "token": anonymize_token(access_token),
                             "email": email,
-                            "status": "失败",
+                            "status": "Thất bại",
                             "error": error_type,
                             "detail": result.get("detail", {}),
                         },
@@ -693,7 +752,7 @@ class AccountService:
                 "oai-device-id": device_id,
             }
             
-            # 添加 sentinel token
+            # Thêm sentinel token
             try:
                 from utils.sentinel import build_sentinel_token
                 sentinel_val, oai_sc_val = build_sentinel_token(session, device_id, "password_verify")
@@ -962,7 +1021,7 @@ class AccountService:
             source_type: str | None = None,
             plan_types: set[str] | tuple[str, ...] | None = None,
     ) -> str:
-        """从候选池中获取一个可用的图片生图 token。
+        """从候选池中获取一个可用的图片Tạo ảnh token。
 
         基于本地缓存做初筛，然后通过 fetch_remote_info 做远程验证（token 有效性、配额等）。
         限制最大尝试次数防止 token rotation 导致无限循环。
@@ -1003,6 +1062,7 @@ class AccountService:
     def get_text_access_token(self, excluded_tokens: set[str] | None = None) -> str:
         excluded = set(excluded_tokens or set())
         with self._lock:
+            self._merge_session_json_accounts_locked()
             candidates = [
                 token
                 for account in self._accounts.values()
@@ -1038,7 +1098,7 @@ class AccountService:
             return False
         removed = bool(self.delete_accounts([access_token])["removed"])
         if removed:
-            log_service.add(LOG_TYPE_ACCOUNT, "自动移除异常账号",
+            log_service.add(LOG_TYPE_ACCOUNT, "Tự động xóa tài khoản lỗi",
                             {"source": event, "token": anonymize_token(access_token)})
         elif access_token:
             self.update_account(access_token, {"status": "异常", "quota": 0}, quiet=quiet)
@@ -1099,7 +1159,7 @@ class AccountService:
         payload = dict(item)
         payload.pop("accessToken", None)
         payload["access_token"] = access_token
-        # CPA/Codex 导出文件里的 `type=codex` 是导出格式，不是号池套餐类型。
+        # CPA/Codex 导出文件里的 `type=codex` 是导出格式，不是号池套餐Loại。
         if str(payload.get("type") or "").strip().lower() == "codex":
             payload["export_type"] = "codex"
             payload["source_type"] = "codex"
@@ -1168,7 +1228,7 @@ class AccountService:
                     self._accounts[access_token] = account
             self._save_accounts()
             items = [dict(item) for item in self._accounts.values()]
-            log_service.add(LOG_TYPE_ACCOUNT, f"新增 {added} 个账号，跳过 {skipped} 个",
+            log_service.add(LOG_TYPE_ACCOUNT, f"Thêm mới {added} 个账号，Bỏ qua {skipped} 个",
                             {"added": added, "skipped": skipped})
         return {"added": added, "skipped": skipped, "items": items}
 
@@ -1397,7 +1457,7 @@ class AccountService:
                 progress["error"] = error
 
     def get_refresh_progress(self, progress_id: str) -> dict | None:
-        """查询刷新进度。"""
+        """Truy vấn刷新进度。"""
         with self._refresh_progress_lock:
             progress = self._refresh_progress.get(progress_id)
             return dict(progress) if progress else None
@@ -1447,7 +1507,7 @@ class AccountService:
                 progress["error"] = error
 
     def get_relogin_progress(self, progress_id: str) -> dict | None:
-        """查询重新登录进度。"""
+        """Truy vấn重新登录进度。"""
         with self._relogin_progress_lock:
             progress = self._relogin_progress.get(progress_id)
             return dict(progress) if progress else None
@@ -1493,7 +1553,7 @@ class AccountService:
                     raise
                 except Exception as exc:
                     error_str = str(exc)
-                    # TLS/代理连接错误是网络问题，不计入账号失败
+                    # TLS/代理连接错误是网络问题，不计入账号Thất bại
                     from services.protocol.conversation import is_tls_connection_error
                     if not is_tls_connection_error(error_str):
                         errors.append({"token": anonymize_token(token), "error": error_str})
@@ -1511,7 +1571,7 @@ class AccountService:
         else:
             executor.shutdown(wait=True, cancel_futures=True)
 
-        # 自动重新登录异常账号（仅当配置开启时）
+        # 自动重新登录异常账号（仅当Cấu hình开启时）
         relogined = 0
         if config.auto_relogin_after_refresh:
             for token in access_tokens:
@@ -1570,7 +1630,7 @@ class AccountService:
             if not account:
                 errors.append({"token": anonymize_token(token), "error": "账号不存在"})
                 if progress_id:
-                    self.update_relogin_progress(progress_id, token, "跳过", "账号不存在")
+                    self.update_relogin_progress(progress_id, token, "Bỏ qua", "账号不存在")
                 continue
 
             email = str(account.get("email") or "").strip()
@@ -1578,7 +1638,7 @@ class AccountService:
             if not email or not password:
                 skipped += 1
                 if progress_id:
-                    self.update_relogin_progress(progress_id, token, "跳过", "无邮箱密码")
+                    self.update_relogin_progress(progress_id, token, "Bỏ qua", "无邮箱密码")
                 continue
 
             # 在新线程中执行密码重新登录

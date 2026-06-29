@@ -62,12 +62,12 @@ export function ProxyRuntimeCard() {
       const data = await testProxy();
       setProxyResult(data.result);
       if (data.result.ok) {
-        toast.success(`清障代理可用（${data.result.latency_ms} ms，HTTP ${data.result.status}）`);
+        toast.success(`清障Proxy khả dụng（${data.result.latency_ms} ms，HTTP ${data.result.status}）`);
       } else {
-        toast.error(`清障代理不可用：${data.result.error ?? "未知错误"}`);
+        toast.error(`清障Proxy không khả dụng：${data.result.error ?? "Không rõ错误"}`);
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "测试清障代理失败");
+      toast.error(error instanceof Error ? error.message : "测试清障代理Thất bại");
     } finally {
       setIsTestingProxy(false);
     }
@@ -86,10 +86,10 @@ export function ProxyRuntimeCard() {
       if (data.result.ok) {
         toast.success(`Clearance 获取成功（${data.result.latency_ms} ms）`);
       } else {
-        toast.error(`Clearance 获取失败：${data.result.error ?? data.result.status}`);
+        toast.error(`Clearance 获取Thất bại：${data.result.error ?? data.result.status}`);
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "测试 Clearance 失败");
+      toast.error(error instanceof Error ? error.message : "测试 Clearance Thất bại");
     } finally {
       setIsTestingClearance(false);
     }
@@ -109,12 +109,12 @@ export function ProxyRuntimeCard() {
             </p>
           </div>
           <span className={`rounded-full px-3 py-1 text-xs ${runtimeEnabled ? "bg-emerald-50 text-emerald-700" : "bg-stone-100 text-stone-500"}`}>
-            {runtimeEnabled ? "已启用" : "未启用"}
+            {runtimeEnabled ? "已Bật" : "未Bật"}
           </span>
         </div>
 
         <div className="rounded-xl border border-stone-200 bg-stone-50 px-4 py-3 text-xs leading-6 text-stone-600">
-          代理优先级：账号代理 &gt; FlareSolverr 代理链路 &gt; 显式代理 &gt; 全局代理。Cookie / cf_clearance 不会在接口响应中明文返回。
+          代理优先级：账号代理 &gt; FlareSolverr 代理链路 &gt; 显式代理 &gt; Proxy toàn cục。Cookie / cf_clearance 不会在接口响应中明文返回。
         </div>
 
         <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-6 text-amber-800">
@@ -128,7 +128,7 @@ export function ProxyRuntimeCard() {
               checked={runtimeEnabled}
               onCheckedChange={(checked) => setProxyRuntimeField("enabled", Boolean(checked))}
             />
-            启用 FlareSolverr 清障
+            Bật FlareSolverr 清障
           </label>
 
           <div className="space-y-2">
@@ -192,7 +192,7 @@ export function ProxyRuntimeCard() {
               onCheckedChange={(checked) => setProxyRuntimeField("skip_ssl_verify", Boolean(checked))}
               disabled={!runtimeEnabled}
             />
-            跳过 SSL 校验
+            Bỏ qua SSL 校验
           </label>
 
           <div className="flex items-end justify-end">
@@ -211,8 +211,8 @@ export function ProxyRuntimeCard() {
           {proxyResult ? (
             <div className={`rounded-xl border px-3 py-2 text-xs leading-6 md:col-span-2 ${proxyResult.ok ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-rose-200 bg-rose-50 text-rose-800"}`}>
               {proxyResult.ok
-                ? `代理可用：HTTP ${proxyResult.status}，用时 ${proxyResult.latency_ms} ms，来源 ${proxyResult.proxy_source ?? "unknown"}`
-                : `代理不可用：${proxyResult.error ?? "未知错误"}（用时 ${proxyResult.latency_ms} ms）`}
+                ? `Proxy khả dụng：HTTP ${proxyResult.status}，用时 ${proxyResult.latency_ms} ms，来源 ${proxyResult.proxy_source ?? "unknown"}`
+                : `Proxy không khả dụng：${proxyResult.error ?? "Không rõ错误"}（用时 ${proxyResult.latency_ms} ms）`}
             </div>
           ) : null}
         </div>
@@ -244,7 +244,7 @@ export function ProxyRuntimeCard() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">不启用</SelectItem>
+                  <SelectItem value="none">不Bật</SelectItem>
                   <SelectItem value="manual">手动 Cookie</SelectItem>
                   <SelectItem value="flaresolverr">FlareSolverr</SelectItem>
                 </SelectContent>
@@ -370,7 +370,7 @@ export function ProxyRuntimeCard() {
             disabled={isSavingConfig}
           >
             {isSavingConfig ? <LoaderCircle className="size-4 animate-spin" /> : <Save className="size-4" />}
-            保存配置
+            Lưu cấu hình
           </Button>
         </div>
       </CardContent>

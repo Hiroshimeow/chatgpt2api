@@ -55,7 +55,7 @@ export function UserKeysCard() {
       const data = await fetchUserKeys();
       setItems(data.items);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "加载用户密钥失败");
+      toast.error(error instanceof Error ? error.message : "加载用户密钥Thất bại");
     } finally {
       setIsLoading(false);
     }
@@ -79,7 +79,7 @@ export function UserKeysCard() {
       setIsDialogOpen(false);
       toast.success("用户密钥已创建");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "创建用户密钥失败");
+      toast.error(error instanceof Error ? error.message : "创建用户密钥Thất bại");
     } finally {
       setIsCreating(false);
     }
@@ -102,9 +102,9 @@ export function UserKeysCard() {
     try {
       const data = await updateUserKey(item.id, { enabled: !item.enabled });
       setItems(data.items);
-      toast.success(item.enabled ? "用户密钥已禁用" : "用户密钥已启用");
+      toast.success(item.enabled ? "用户密钥已禁用" : "用户密钥已Bật");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "更新用户密钥失败");
+      toast.error(error instanceof Error ? error.message : "更新用户密钥Thất bại");
     } finally {
       setItemPending(item.id, false);
     }
@@ -120,9 +120,9 @@ export function UserKeysCard() {
       const data = await deleteUserKey(item.id);
       setItems(data.items);
       setDeletingItem(null);
-      toast.success("用户密钥已删除");
+      toast.success("用户密钥Đã xóa");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "删除用户密钥失败");
+      toast.error(error instanceof Error ? error.message : "删除用户密钥Thất bại");
     } finally {
       setItemPending(item.id, false);
     }
@@ -156,7 +156,7 @@ export function UserKeysCard() {
       setEditKey("");
       toast.success(trimmedKey ? "用户密钥已更新" : "用户名称已更新");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "更新用户密钥失败");
+      toast.error(error instanceof Error ? error.message : "更新用户密钥Thất bại");
     } finally {
       setItemPending(item.id, false);
     }
@@ -167,7 +167,7 @@ export function UserKeysCard() {
       await navigator.clipboard.writeText(value);
       toast.success("已复制到剪贴板");
     } catch {
-      toast.error("复制失败，请手动复制");
+      toast.error("复制Thất bại，请手动复制");
     }
   };
 
@@ -182,7 +182,7 @@ export function UserKeysCard() {
               </div>
               <div>
                 <h2 className="text-lg font-semibold tracking-tight">用户密钥管理</h2>
-                <p className="text-sm text-stone-500">为普通用户创建专用密钥；普通用户只能进入画图页，不能查看设置和号池。</p>
+                <p className="text-sm text-stone-500">为Người dùng thường创建专用密钥；Người dùng thường只能进入Vẽ ảnh页，不能查看Cài đặt和号池。</p>
               </div>
             </div>
             <Button className="h-9 rounded-xl bg-stone-950 px-4 text-white hover:bg-stone-800" onClick={() => setIsDialogOpen(true)}>
@@ -215,7 +215,7 @@ export function UserKeysCard() {
             </div>
           ) : items.length === 0 ? (
             <div className="rounded-xl bg-stone-50 px-6 py-10 text-center text-sm text-stone-500">
-              暂无普通用户密钥。点击右上角按钮后即可创建并分发给其他人。
+              暂无Người dùng thường密钥。点击右上角按钮后即可创建并分发给其他人。
             </div>
           ) : (
             <div className="space-y-3">
@@ -227,7 +227,7 @@ export function UserKeysCard() {
                       <div className="flex flex-wrap items-center gap-2">
                         <div className="truncate text-sm font-medium text-stone-800">{item.name}</div>
                         <Badge variant={item.enabled ? "success" : "secondary"} className="rounded-md">
-                          {item.enabled ? "已启用" : "已禁用"}
+                          {item.enabled ? "已Bật" : "已禁用"}
                         </Badge>
                       </div>
                       <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-stone-500">
@@ -261,7 +261,7 @@ export function UserKeysCard() {
                         ) : (
                           <CheckCircle2 className="size-4" />
                         )}
-                        {item.enabled ? "禁用" : "启用"}
+                        {item.enabled ? "禁用" : "Bật"}
                       </Button>
                       <Button
                         type="button"
@@ -307,7 +307,7 @@ export function UserKeysCard() {
               onClick={() => setIsDialogOpen(false)}
               disabled={isCreating}
             >
-              取消
+              Hủy
             </Button>
             <Button
               type="button"
@@ -338,7 +338,7 @@ export function UserKeysCard() {
               onClick={() => setDeletingItem(null)}
               disabled={deletingItem ? pendingIds.has(deletingItem.id) : false}
             >
-              取消
+              Hủy
             </Button>
             <Button
               type="button"
@@ -403,7 +403,7 @@ export function UserKeysCard() {
               }}
               disabled={editingItem ? pendingIds.has(editingItem.id) : false}
             >
-              取消
+              Hủy
             </Button>
             <Button
               type="button"

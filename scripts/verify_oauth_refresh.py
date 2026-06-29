@@ -36,7 +36,7 @@ def diagnose() -> list[str]:
         has_rt = bool(str(account.get("refresh_token") or "").strip())
         if has_rt:
             refreshable.append(token)
-        print(f"- email={account.get('email') or '(未知)'}")
+        print(f"- email={account.get('email') or '(Không rõ)'}")
         print(f"    access_token[:20]   = {token[:20]}...")
         print(f"    距过期              = {_fmt_remaining(remaining)}")
         print(f"    refresh_token       = {'有 ✅' if has_rt else '无 ❌（无法自动刷新）'}")
@@ -63,20 +63,20 @@ def force_refresh(tokens: list[str]) -> None:
         success = bool(new_token) and not err
         if success:
             ok += 1
-        print(f"- email={before.get('email') or '(未知)'}")
+        print(f"- email={before.get('email') or '(Không rõ)'}")
         print(f"    旧 access_token[:20] = {token[:20]}...")
         print(f"    新 access_token[:20] = {new_token[:20]}...")
         print(f"    token 是否轮换       = {'是' if rotated else '否（exp 未到刷新窗口时可能返回原值）'}")
         print(f"    last_token_refresh_at    = {after.get('last_token_refresh_at')}")
         print(f"    last_token_refresh_error = {after.get('last_token_refresh_error') or '无'}")
-        print(f"    >>> 刷新结果         = {'成功 ✅' if success else '失败 ❌'}")
+        print(f"    >>> 刷新结果         = {'成功 ✅' if success else 'Thất bại ❌'}")
         print()
     print("=" * 60)
     print(f"汇总: {ok}/{len(tokens)} 个账号刷新成功")
     if ok == len(tokens):
         print("✅ 自动刷新机制对这些账号完全可用——refresh_token 与 client_id 匹配。")
     else:
-        print("❌ 有账号刷新失败，看上面的 last_token_refresh_error，或 docker logs 里的 [oauth-login]/refresh 日志。")
+        print("❌ 有账号刷新Thất bại，看上面的 last_token_refresh_error，或 docker logs 里的 [oauth-login]/refresh 日志。")
 
 
 def main() -> None:

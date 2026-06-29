@@ -28,11 +28,11 @@ export function BaseUrlCard() {
             </div>
             <div>
               <h2 className="text-lg font-semibold tracking-tight">基础地址</h2>
-              <p className="text-sm text-stone-500">设置 `CHATGPT2API_BASE_URL` 的本地配置值，保存后立即生效。</p>
+              <p className="text-sm text-stone-500">Cài đặt `CHATGPT2API_BASE_URL` 的本地Cấu hình值，保存后立即生效。</p>
             </div>
           </div>
           <Badge variant={baseUrl.trim() ? "success" : "secondary"} className="w-fit rounded-md px-2.5 py-1">
-            {baseUrl.trim() ? "已配置" : "未配置"}
+            {baseUrl.trim() ? "已Cấu hình" : "未Cấu hình"}
           </Badge>
         </div>
 
@@ -60,7 +60,7 @@ export function BaseUrlCard() {
                 disabled={isSavingConfig}
               >
                 {isSavingConfig ? <LoaderCircle className="size-4 animate-spin" /> : <Save className="size-4" />}
-                保存配置
+                Lưu cấu hình
               </Button>
             </div>
           </>

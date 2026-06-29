@@ -114,7 +114,7 @@ def build_sentinel_token(
         (openai-sentinel-token header value, oai-sc cookie value) 元组
 
     Raises:
-        RuntimeError: sentinel 请求失败
+        RuntimeError: sentinel 请求Thất bại
     """
     ua = user_agent or DEFAULT_SENTINEL_USER_AGENT
     ch_ua = sec_ch_ua or DEFAULT_SENTINEL_SEC_CH_UA

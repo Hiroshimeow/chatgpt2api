@@ -38,7 +38,7 @@ export function ProxySettingsCard() {
       setFormUrl(data.proxy.url);
       setFormEnabled(data.proxy.enabled);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "加载代理配置失败");
+      toast.error(error instanceof Error ? error.message : "加载代理Cấu hìnhThất bại");
     } finally {
       setIsLoading(false);
     }
@@ -58,7 +58,7 @@ export function ProxySettingsCard() {
 
   const handleSave = async () => {
     if (formEnabled && !formUrl.trim()) {
-      toast.error("启用代理时必须填写代理地址");
+      toast.error("Bật代理时必须填写代理地址");
       return;
     }
     setIsSaving(true);
@@ -70,9 +70,9 @@ export function ProxySettingsCard() {
       setSettings(data.proxy);
       setFormUrl(data.proxy.url);
       setFormEnabled(data.proxy.enabled);
-      toast.success("代理配置已保存");
+      toast.success("代理Cấu hình已保存");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "保存失败");
+      toast.error(error instanceof Error ? error.message : "保存Thất bại");
     } finally {
       setIsSaving(false);
     }
@@ -81,7 +81,7 @@ export function ProxySettingsCard() {
   const handleTest = async () => {
     const candidate = formUrl.trim();
     if (!candidate) {
-      toast.error("请先填写代理地址");
+      toast.error("Hãy nhập địa chỉ proxy trước");
       return;
     }
     setIsTesting(true);
@@ -90,12 +90,12 @@ export function ProxySettingsCard() {
       const data = await testProxy(candidate);
       setTestResult(data.result);
       if (data.result.ok) {
-        toast.success(`代理可用（${data.result.latency_ms} ms，HTTP ${data.result.status}）`);
+        toast.success(`Proxy khả dụng（${data.result.latency_ms} ms，HTTP ${data.result.status}）`);
       } else {
-        toast.error(`代理不可用：${data.result.error ?? "未知错误"}`);
+        toast.error(`Proxy không khả dụng：${data.result.error ?? "Không rõ错误"}`);
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "测试代理失败");
+      toast.error(error instanceof Error ? error.message : "Test proxyThất bại");
     } finally {
       setIsTesting(false);
     }
@@ -110,9 +110,9 @@ export function ProxySettingsCard() {
               <Wifi className="size-5 text-stone-600" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold tracking-tight">上游代理配置</h2>
+              <h2 className="text-lg font-semibold tracking-tight">上游代理Cấu hình</h2>
               <p className="text-sm text-stone-500">
-                为 chatgpt.com 的请求配置出网代理，适合国内服务器部署；Sub2API / CPA 请求不受影响。
+                为 chatgpt.com 的请求Cấu hình出网代理，适合国内服务器部署；Sub2API / CPA 请求不受影响。
               </p>
             </div>
           </div>
@@ -132,7 +132,7 @@ export function ProxySettingsCard() {
                 onChange={(event) => setFormEnabled(event.target.checked)}
               />
               <div className="space-y-0.5">
-                <div className="text-sm font-medium text-stone-800">启用代理</div>
+                <div className="text-sm font-medium text-stone-800">Bật代理</div>
                 <div className="text-sm text-stone-500">
                   关闭后 chatgpt.com 请求会直连。保存后立即生效，无需重启。
                 </div>
@@ -165,10 +165,10 @@ export function ProxySettingsCard() {
               >
                 {testResult.ok ? (
                   <>
-                    代理可用：HTTP {testResult.status}，用时 {testResult.latency_ms} ms
+                    Proxy khả dụng：HTTP {testResult.status}，用时 {testResult.latency_ms} ms
                   </>
                 ) : (
-                  <>代理不可用：{testResult.error ?? "未知错误"}（用时 {testResult.latency_ms} ms）</>
+                  <>Proxy không khả dụng：{testResult.error ?? "Không rõ错误"}（用时 {testResult.latency_ms} ms）</>
                 )}
               </div>
             ) : null}

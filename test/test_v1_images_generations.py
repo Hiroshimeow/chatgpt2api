@@ -14,7 +14,7 @@ BASE_URL = "http://localhost:8000"
 
 class ImageGenerationsTests(unittest.TestCase):
     def test_image_generation_http(self):
-        """测试图片生成的非流式 HTTP 调用。"""
+        """测试Tạo ảnh的非流式 HTTP 调用。"""
         response = requests.post(
             f"{BASE_URL}/v1/images/generations",
             headers={"Authorization": f"Bearer {AUTH_KEY}"},
@@ -41,7 +41,7 @@ class ImageGenerationsTests(unittest.TestCase):
             print(path)
 
     def test_image_generation_stream_http(self):
-        """测试图片生成的流式 HTTP 调用。"""
+        """测试Tạo ảnh的流式 HTTP 调用。"""
         response = requests.post(
             f"{BASE_URL}/v1/images/generations",
             headers={"Authorization": f"Bearer {AUTH_KEY}"},

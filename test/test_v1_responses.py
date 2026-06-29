@@ -104,7 +104,7 @@ class ResponsesTests(unittest.TestCase):
         self.assertIn("response.completed", event_types)
 
     def test_image_response_http(self):
-        """测试 Responses 画图的非流式 HTTP 调用。"""
+        """测试 Responses Vẽ ảnh的非流式 HTTP 调用。"""
         response = requests.post(
             f"{BASE_URL}/v1/responses",
             headers={"Authorization": f"Bearer {AUTH_KEY}"},
@@ -143,7 +143,7 @@ class ResponsesTests(unittest.TestCase):
             print(path)
 
     def test_image_response_stream_http(self):
-        """测试 Responses 画图的流式 HTTP 调用。"""
+        """测试 Responses Vẽ ảnh的流式 HTTP 调用。"""
         response = requests.post(
             f"{BASE_URL}/v1/responses",
             headers={"Authorization": f"Bearer {AUTH_KEY}"},
@@ -197,7 +197,7 @@ class ResponsesTests(unittest.TestCase):
             print(path)
 
     def test_codex_image_response_http(self):
-        """测试 Responses 的 codex 画图非流式 HTTP 调用。"""
+        """测试 Responses 的 codex Vẽ ảnh非流式 HTTP 调用。"""
         response = requests.post(
             f"{BASE_URL}/v1/responses",
             headers={"Authorization": f"Bearer {AUTH_KEY}"},
@@ -236,7 +236,7 @@ class ResponsesTests(unittest.TestCase):
             print(path)
 
     def test_codex_image_response_stream_http(self):
-        """测试 Responses 的 codex 画图流式 HTTP 调用。"""
+        """测试 Responses 的 codex Vẽ ảnh流式 HTTP 调用。"""
         response = requests.post(
             f"{BASE_URL}/v1/responses",
             headers={"Authorization": f"Bearer {AUTH_KEY}"},

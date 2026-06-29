@@ -76,7 +76,7 @@ export function ImportBrowserDialog() {
             <Input
               value={fileQuery}
               onChange={(event) => setFileQuery(event.target.value)}
-              placeholder="搜索 email 或文件名"
+              placeholder="Tìm kiếm email 或文件名"
               className="h-10 rounded-xl border-stone-200 bg-white pl-10"
             />
           </div>
@@ -98,7 +98,7 @@ export function ImportBrowserDialog() {
               className="h-10 rounded-xl border-stone-200 bg-white px-4 text-stone-700"
               onClick={() => toggleSelectAllFiltered(!allFilteredSelected)}
             >
-              {allFilteredSelected ? "取消全选" : "全选筛选结果"}
+              {allFilteredSelected ? "Hủy全选" : "全选筛选结果"}
             </Button>
           </div>
         </div>
@@ -168,7 +168,7 @@ export function ImportBrowserDialog() {
             onClick={() => setBrowserOpen(false)}
             disabled={isStartingImport}
           >
-            取消
+            Hủy
           </Button>
           <Button
             className="h-10 rounded-xl bg-stone-950 px-5 text-white hover:bg-stone-800"

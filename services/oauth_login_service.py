@@ -146,7 +146,7 @@ class OAuthLoginService:
 
         - 优先用 callback URL 自带 state 里的 session_id（更可靠），
           找不到才用前端传来的 session_id；
-        - 失败时不立刻销毁 session（OAuth code 错配换 token 失败通常不会消耗 code），
+        - Thất bại时不立刻销毁 session（OAuth code 错配换 token Thất bại通常不会消耗 code），
           只有成功兑换才 pop，便于用户用同一 verifier 重试。
         """
         body_sid = str(session_id or "").strip()
@@ -177,7 +177,7 @@ class OAuthLoginService:
 
         if state and session.get("state") and state != session["state"]:
             raise OAuthLoginError(
-                "state 不匹配。常见原因：你点过两次\"打开授权页面\"，但浏览器里登录的还是前一次的窗口。请点\"重新生成\"重来。"
+                "state 不匹配。常见原因：你点过两次\"Mở trang ủy quyền\"，但浏览器里登录的还是前一次的窗口。请点\"重新生成\"重来。"
             )
 
         tokens = self._exchange_code(
@@ -234,7 +234,7 @@ class OAuthLoginService:
                     detail = str(response.text or "")[:300]
                 except Exception:
                     detail = ""
-            # 打到 docker logs 方便排错——OAuth 换 token 的失败原因往往只有这里能看到
+            # 打到 docker logs 方便排错——OAuth 换 token 的Thất bại原因往往只有这里能看到
             print(
                 f"[oauth-login] /api/accounts/oauth/token rejected: "
                 f"status={response.status_code} detail={detail!r} "

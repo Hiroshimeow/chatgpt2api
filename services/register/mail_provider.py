@@ -419,7 +419,7 @@ class CloudflareTempMailProvider(BaseMailProvider):
     def _request(self, method: str, path: str, headers: dict | None = None, params: dict | None = None, payload: dict | None = None, expected: tuple[int, ...] = (200,)):
         resp = self.session.request(method.upper(), f"{self.api_base}{path}", headers={"Content-Type": "application/json", "User-Agent": self.conf["user_agent"], **(headers or {})}, params=params, json=payload, timeout=self.conf["request_timeout"], verify=False)
         if resp.status_code not in expected:
-            raise RuntimeError(f"CloudflareTempMail 请求失败: {method} {path}, HTTP {resp.status_code}, body={resp.text[:300]}")
+            raise RuntimeError(f"CloudflareTempMail 请求Thất bại: {method} {path}, HTTP {resp.status_code}, body={resp.text[:300]}")
         return {} if resp.status_code == 204 else resp.json()
 
     def create_mailbox(self, username: str | None = None) -> dict[str, Any]:
@@ -431,7 +431,7 @@ class CloudflareTempMailProvider(BaseMailProvider):
         return {"provider": self.name, "provider_ref": self.provider_ref, "address": address, "token": token}
 
     def get_existing_mailbox(self, email: str) -> dict[str, Any]:
-        """通过管理员密码获取已有邮箱地址的 JWT，用于查询邮件。"""
+        """通过Mật khẩu admin获取已有邮箱地址的 JWT，用于Truy vấn邮件。"""
         data = self._request("POST", "/admin/get_address", headers={"x-admin-auth": self.admin_password}, payload={"address": email})
         address = str(data.get("address") or "").strip()
         token = str(data.get("jwt") or "").strip()
@@ -490,13 +490,13 @@ class DDGMailProvider(BaseMailProvider):
             params = {**(params or {}), "key": self.cf_api_key}
         resp = self.session.request(method.upper(), f"{self.cf_api_base}{path}", headers=merged_headers, params=params, json=payload, timeout=self.conf["request_timeout"], verify=False)
         if resp.status_code not in expected:
-            raise RuntimeError(f"DDGMail CF请求失败: {method} {path}, HTTP {resp.status_code}, body={resp.text[:300]}")
+            raise RuntimeError(f"DDGMail CF请求Thất bại: {method} {path}, HTTP {resp.status_code}, body={resp.text[:300]}")
         return {} if resp.status_code == 204 else resp.json()
 
     def _ddg_request(self, method: str, path: str, payload: dict | None = None) -> dict:
         resp = self.session.request(method.upper(), f"https://quack.duckduckgo.com{path}", headers={"Authorization": f"Bearer {self.ddg_token}", "Content-Type": "application/json", "User-Agent": self.conf["user_agent"]}, json=payload, timeout=self.conf["request_timeout"], verify=False)
         if resp.status_code not in (200, 201):
-            raise RuntimeError(f"DDG API请求失败: {method} {path}, HTTP {resp.status_code}, body={resp.text[:300]}")
+            raise RuntimeError(f"DDG API请求Thất bại: {method} {path}, HTTP {resp.status_code}, body={resp.text[:300]}")
         return resp.json()
 
     def _cf_list_payload(self, data: Any) -> list:
@@ -524,7 +524,7 @@ class DDGMailProvider(BaseMailProvider):
         _record_ddg_alias(ddg_address)
 
         if not self.cf_inbox_jwt:
-            raise RuntimeError("DDGMail 需要 cf_inbox_jwt（DDG 转发目标的固定收件箱 JWT），请在邮箱配置中填写 CF Inbox JWT")
+            raise RuntimeError("DDGMail 需要 cf_inbox_jwt（DDG 转发目标的固定收件箱 JWT），请在Cấu hình email中填写 CF Inbox JWT")
 
         return {"provider": self.name, "provider_ref": self.provider_ref, "address": ddg_address, "token": self.cf_inbox_jwt, "label": self.label}
 
@@ -614,7 +614,7 @@ class CloudMailGenProvider(BaseMailProvider):
             verify=False,
         )
         if resp.status_code not in expected:
-            raise RuntimeError(f"CloudMailGen 请求失败: {method} {path}, HTTP {resp.status_code}, body={resp.text[:300]}")
+            raise RuntimeError(f"CloudMailGen 请求Thất bại: {method} {path}, HTTP {resp.status_code}, body={resp.text[:300]}")
         return {} if resp.status_code == 204 else resp.json()
 
     def _cache_key(self) -> str:
@@ -657,7 +657,7 @@ class CloudMailGenProvider(BaseMailProvider):
 
     def create_mailbox(self, username: str | None = None) -> dict[str, Any]:
         if not self.domain:
-            raise RuntimeError("CloudMailGen 需要至少配置一个 domain")
+            raise RuntimeError("CloudMailGen 需要至少Cấu hình一个 domain")
         address = self._resolve_address(username)
         return {"provider": self.name, "provider_ref": self.provider_ref, "address": address}
 
@@ -719,7 +719,7 @@ class TempMailLolProvider(BaseMailProvider):
     def _request(self, method: str, path: str, params: dict | None = None, payload: dict | None = None, expected: tuple[int, ...] = (200,)):
         resp = self.session.request(method.upper(), f"https://api.tempmail.lol/v2{path}", params=params, json=payload, timeout=self.conf["request_timeout"], verify=False)
         if resp.status_code not in expected:
-            raise RuntimeError(f"TempMail.lol 请求失败: {method} {path}, HTTP {resp.status_code}, body={resp.text[:300]}")
+            raise RuntimeError(f"TempMail.lol 请求Thất bại: {method} {path}, HTTP {resp.status_code}, body={resp.text[:300]}")
         data = resp.json()
         if not isinstance(data, dict):
             raise RuntimeError(f"TempMail.lol {method} {path} 返回结构不是对象")
@@ -769,7 +769,7 @@ class DuckMailProvider(BaseMailProvider):
         headers = {"Authorization": f"Bearer {self.api_key if use_api_key else token}"} if use_api_key or token else {}
         resp = self.session.request(method.upper(), f"https://api.duckmail.sbs{path}", headers=headers, params=params, json=payload, timeout=self.conf["request_timeout"], verify=False)
         if resp.status_code not in expected:
-            raise RuntimeError(f"DuckMail 请求失败: {method} {path}, HTTP {resp.status_code}, body={resp.text[:300]}")
+            raise RuntimeError(f"DuckMail 请求Thất bại: {method} {path}, HTTP {resp.status_code}, body={resp.text[:300]}")
         return {} if resp.status_code == 204 else resp.json()
 
     @staticmethod
@@ -819,7 +819,7 @@ class GptMailProvider(BaseMailProvider):
         query = dict(params or {})
         resp = self.session.request(method.upper(), f"https://mail.chatgpt.org.uk{path}", params=query, json=payload, timeout=self.conf["request_timeout"], verify=False)
         if resp.status_code != 200:
-            raise RuntimeError(f"GPTMail 请求失败: {method} {path}, HTTP {resp.status_code}, body={resp.text[:300]}")
+            raise RuntimeError(f"GPTMail 请求Thất bại: {method} {path}, HTTP {resp.status_code}, body={resp.text[:300]}")
         data = resp.json()
         return data["data"] if isinstance(data, dict) and "data" in data else data
 
@@ -860,7 +860,7 @@ class MoEmailProvider(BaseMailProvider):
     def _request(self, method: str, path: str, params: dict | None = None, payload: dict | None = None, expected: tuple[int, ...] = (200,)):
         resp = self.session.request(method.upper(), f"{self.api_base}{path}", headers={"X-API-Key": self.api_key, "Content-Type": "application/json", "User-Agent": self.conf["user_agent"]}, params=params, json=payload, timeout=self.conf["request_timeout"], verify=False)
         if resp.status_code not in expected:
-            raise RuntimeError(f"MoEmail 请求失败: {method} {path}, HTTP {resp.status_code}, body={resp.text[:300]}")
+            raise RuntimeError(f"MoEmail 请求Thất bại: {method} {path}, HTTP {resp.status_code}, body={resp.text[:300]}")
         data = resp.json()
         if not isinstance(data, dict):
             raise RuntimeError(f"MoEmail {method} {path} 返回结构不是对象")
@@ -923,7 +923,7 @@ class InbucketMailProvider(BaseMailProvider):
             verify=False,
         )
         if resp.status_code not in expected:
-            raise RuntimeError(f"Inbucket 请求失败: {method} {path}, HTTP {resp.status_code}, body={resp.text[:300]}")
+            raise RuntimeError(f"Inbucket 请求Thất bại: {method} {path}, HTTP {resp.status_code}, body={resp.text[:300]}")
         if resp.status_code == 204:
             return {}
         content_type = str(resp.headers.get("content-type") or "").lower()
@@ -934,7 +934,7 @@ class InbucketMailProvider(BaseMailProvider):
     def _resolve_domain(self) -> str:
         if self.domain:
             return _next_domain(self.domain)
-        raise RuntimeError("Inbucket 需要至少配置一个 domain")
+        raise RuntimeError("Inbucket 需要至少Cấu hình一个 domain")
 
     def _mailbox_name(self, address: str) -> str:
         local_part, _, _ = str(address or "").partition("@")
@@ -1016,12 +1016,12 @@ class YydsMailProvider(BaseMailProvider):
         headers = {"Authorization": f"Bearer {token}"} if token else {"X-API-Key": self.api_key}
         resp = self.session.request(method.upper(), f"{self.api_base}{path}", headers=headers, params=params, json=payload, timeout=self.conf["request_timeout"], verify=False)
         if resp.status_code not in expected:
-            raise RuntimeError(f"YYDSMail 请求失败: {method} {path}, HTTP {resp.status_code}, body={resp.text[:300]}")
+            raise RuntimeError(f"YYDSMail 请求Thất bại: {method} {path}, HTTP {resp.status_code}, body={resp.text[:300]}")
         if resp.status_code == 204:
             return {}
         data = resp.json()
         if isinstance(data, dict) and data.get("success") is False:
-            raise RuntimeError(f"YYDSMail 请求失败: {data.get('errorCode') or data.get('error')}")
+            raise RuntimeError(f"YYDSMail 请求Thất bại: {data.get('errorCode') or data.get('error')}")
         return data.get("data") if isinstance(data, dict) and isinstance(data.get("data"), (dict, list)) else data
 
     @staticmethod
@@ -1068,7 +1068,7 @@ OUTLOOK_DEFAULT_IMAP_HOST = "outlook.office365.com"
 
 
 class OutlookTokenError(RuntimeError):
-    """refresh_token 换取 access_token 失败（凭据失效/权限不对），与“读邮件失败”区分。"""
+    """refresh_token 换取 access_token Thất bại（凭据失效/权限不对），与“读邮件Thất bại”区分。"""
 
 
 def _clean_outlook_value(value: str) -> str:
@@ -1119,7 +1119,7 @@ def _normalize_outlook_pool(value: Any) -> list[dict[str, str]]:
 class OutlookTokenProvider(BaseMailProvider):
     """使用 refresh_token 读取 Outlook/Hotmail 邮箱验证码。
 
-    邮箱池在应用配置里维护（mailboxes 字段，每行 email----password----client_id----refresh_token），
+    邮箱池在应用Cấu hình里维护（mailboxes 字段，每行 email----password----client_id----refresh_token），
     create_mailbox() 从池中取下一个未使用的邮箱，wait_for_code() 用 refresh_token 换取 access_token
     后通过 Graph/IMAP 读取最新邮件。
     """
@@ -1154,7 +1154,7 @@ class OutlookTokenProvider(BaseMailProvider):
             data = {}
         if resp.status_code != 200:
             detail = data.get("error_description") or data.get("error") or resp.text[:300]
-            raise OutlookTokenError(f"OutlookToken 刷新失败: HTTP {resp.status_code}, {detail}")
+            raise OutlookTokenError(f"OutlookToken 刷新Thất bại: HTTP {resp.status_code}, {detail}")
         access_token = str(data.get("access_token") or "").strip()
         if not access_token:
             raise OutlookTokenError("OutlookToken 刷新响应缺少 access_token")
@@ -1175,7 +1175,7 @@ class OutlookTokenProvider(BaseMailProvider):
 
     def create_mailbox(self, username: str | None = None) -> dict[str, Any]:
         if not self.pool:
-            raise RuntimeError("OutlookToken 邮箱池为空，请在邮箱配置中导入 email----password----client_id----refresh_token")
+            raise RuntimeError("OutlookToken 邮箱池为空，请在Cấu hình email中导入 email----password----client_id----refresh_token")
         with _outlook_token_state_lock:
             store = _load_outlook_token_state()
             credential = next((item for item in self.pool if _outlook_entry_available(store.get(item["email"].strip().lower()))), None)
@@ -1206,7 +1206,7 @@ class OutlookTokenProvider(BaseMailProvider):
             data = {}
         if resp.status_code != 200:
             detail = data.get("error", {}).get("message") if isinstance(data.get("error"), dict) else resp.text[:300]
-            raise RuntimeError(f"OutlookToken Graph 失败: HTTP {resp.status_code}, {detail}")
+            raise RuntimeError(f"OutlookToken Graph Thất bại: HTTP {resp.status_code}, {detail}")
         items = data.get("value") if isinstance(data, dict) else None
         return [item for item in items if isinstance(item, dict)] if isinstance(items, list) else []
 
@@ -1249,7 +1249,7 @@ class OutlookTokenProvider(BaseMailProvider):
             imap.authenticate("XOAUTH2", lambda _: auth_string.encode("utf-8"))
             status, _ = imap.select("INBOX", readonly=True)
             if status != "OK":
-                raise RuntimeError("OutlookToken IMAP select INBOX 失败")
+                raise RuntimeError("OutlookToken IMAP select INBOX Thất bại")
             status, data = imap.uid("search", None, "ALL")
             if status != "OK" or not data or not data[0]:
                 return []
@@ -1381,7 +1381,7 @@ def _entries(mail_config: dict) -> list[dict]:
 def _enabled_entries(mail_config: dict) -> list[dict]:
     items = [item for item in _entries(mail_config) if item.get("enable")]
     if not items:
-        raise RuntimeError("mail.providers 没有启用的 provider")
+        raise RuntimeError("mail.providers 没有Bật的 provider")
     return items
 
 
@@ -1442,7 +1442,7 @@ def create_mailbox(mail_config: dict, username: str | None = None) -> dict:
                 raise
         finally:
             provider.close()
-    raise RuntimeError(last_error or "所有启用的邮箱提供商均无法创建邮箱")
+    raise RuntimeError(last_error or "所有Bật的邮箱提供商均无法创建邮箱")
 
 
 def wait_for_code(mail_config: dict, mailbox: dict) -> str | None:
@@ -1456,8 +1456,8 @@ def wait_for_code(mail_config: dict, mailbox: dict) -> str | None:
 def mark_mailbox_result(mailbox: dict, *, success: bool, error: Exception | str | None = None) -> None:
     """注册流程结束后更新邮箱池状态。
 
-    仅对 outlook_token 邮箱生效：成功标记 used；失败时若是 token 失效标记 token_invalid，
-    其余失败标记 failed（保留邮箱占用以便排查，可通过重置释放）。
+    仅对 outlook_token 邮箱生效：成功标记 used；Thất bại时若是 token 失效标记 token_invalid，
+    其余Thất bại标记 failed（保留邮箱占用以便排查，可通过重置释放）。
     """
     if str(mailbox.get("provider") or "") != OutlookTokenProvider.name:
         return
@@ -1468,7 +1468,7 @@ def mark_mailbox_result(mailbox: dict, *, success: bool, error: Exception | str 
         _set_outlook_token_state(address, "used")
         return
     reason = str(error or "").strip()
-    if isinstance(error, OutlookTokenError) or "OutlookToken 刷新失败" in reason or "access_token" in reason:
+    if isinstance(error, OutlookTokenError) or "OutlookToken 刷新Thất bại" in reason or "access_token" in reason:
         _set_outlook_token_state(address, "token_invalid", reason[:300])
     else:
         _set_outlook_token_state(address, "failed", reason[:300])
@@ -1482,7 +1482,7 @@ def release_mailbox(mailbox: dict) -> None:
 
 
 def get_existing_mailbox(mail_config: dict, email: str) -> dict:
-    """通过管理员密码获取已有邮箱地址的 JWT，用于查询邮件。"""
+    """通过Mật khẩu admin获取已有邮箱地址的 JWT，用于Truy vấn邮件。"""
     enabled = _enabled_entries(mail_config)
     tried: set[str] = set()
     last_error = ""
@@ -1497,11 +1497,11 @@ def get_existing_mailbox(mail_config: dict, email: str) -> dict:
                 mailbox = provider.get_existing_mailbox(email)
                 return mailbox
             else:
-                raise RuntimeError(f"邮箱提供商 {provider.name} 不支持查询已有邮箱")
+                raise RuntimeError(f"邮箱提供商 {provider.name} 不支持Truy vấn已有邮箱")
         except RuntimeError as error:
             last_error = str(error)
             if "DDG日上限已达" not in last_error:
                 raise
         finally:
             provider.close()
-    raise RuntimeError(last_error or "所有启用的邮箱提供商均无法查询已有邮箱")
+    raise RuntimeError(last_error or "所有Bật的邮箱提供商均无法Truy vấn已有邮箱")

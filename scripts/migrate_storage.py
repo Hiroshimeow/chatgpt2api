@@ -15,7 +15,7 @@ import os
 import sys
 from pathlib import Path
 
-# 添加项目根目录到 Python 路径
+# Thêm项目根目录到 Python 路径
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 DATA_DIR = Path(__file__).resolve().parents[1] / "data"
@@ -113,7 +113,7 @@ def main():
   python scripts/migrate_storage.py --import backup.json
 
 环境变量:
-  STORAGE_BACKEND  - 存储后端类型 (json, sqlite, postgres, git)
+  STORAGE_BACKEND  - 存储后端Loại (json, sqlite, postgres, git)
   DATABASE_URL     - 数据库连接字符串
   GIT_REPO_URL     - Git 仓库地址
   GIT_TOKEN        - Git 访问令牌

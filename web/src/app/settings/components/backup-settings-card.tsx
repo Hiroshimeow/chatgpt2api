@@ -64,10 +64,10 @@ function getFilenameFromContentDisposition(value: string | null) {
 }
 
 const includeLabels: Array<{ key: keyof BackupInclude; label: string }> = [
-  { key: "config", label: "系统配置" },
-  { key: "register", label: "注册配置" },
-  { key: "cpa", label: "CPA 配置" },
-  { key: "sub2api", label: "Sub2API 配置" },
+  { key: "config", label: "系统Cấu hình" },
+  { key: "register", label: "Cấu hình đăng ký" },
+  { key: "cpa", label: "CPA Cấu hình" },
+  { key: "sub2api", label: "Sub2API Cấu hình" },
   { key: "logs", label: "调度与调用日志" },
   { key: "image_tasks", label: "图片任务记录" },
   { key: "accounts_snapshot", label: "账号快照" },
@@ -119,7 +119,7 @@ export function BackupSettingsCard() {
       setDetail(data.item);
     } catch (error) {
       setDetail(null);
-      toast.error(error instanceof Error ? error.message : "读取备份详情失败");
+      toast.error(error instanceof Error ? error.message : "读取备份详情Thất bại");
     } finally {
       setDetailLoading(false);
     }
@@ -129,7 +129,7 @@ export function BackupSettingsCard() {
     try {
       const authKey = await getStoredAuthKey();
       if (!authKey) {
-        toast.error("当前登录态已失效，请重新登录后再下载");
+        toast.error("当前登录态已失效，请重新登录后再Tải xuống");
         return;
       }
       const response = await fetch(`${webConfig.apiUrl.replace(/\/$/, "")}${getBackupDownloadUrl(key)}`, {
@@ -138,7 +138,7 @@ export function BackupSettingsCard() {
         },
       });
       if (!response.ok) {
-        let message = "下载备份失败";
+        let message = "Tải xuống备份Thất bại";
         try {
           const data = await response.json() as { detail?: { error?: string }; error?: string; message?: string };
           message = data.detail?.error || data.error || data.message || message;
@@ -157,9 +157,9 @@ export function BackupSettingsCard() {
       anchor.click();
       anchor.remove();
       window.URL.revokeObjectURL(url);
-      toast.success("备份下载已开始");
+      toast.success("备份Tải xuống已开始");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "下载备份失败");
+      toast.error(error instanceof Error ? error.message : "Tải xuống备份Thất bại");
     }
   };
 
@@ -179,7 +179,7 @@ export function BackupSettingsCard() {
             </div>
             <div className="flex items-center gap-2">
               <Badge variant={backupState?.running ? "warning" : backupState?.last_status === "success" ? "success" : "secondary"} className="rounded-md">
-                {backupState?.running ? "备份中" : backupState?.last_status === "success" ? "最近成功" : backupState?.last_status === "error" ? "最近失败" : "未执行"}
+                {backupState?.running ? "备份中" : backupState?.last_status === "success" ? "最近成功" : backupState?.last_status === "error" ? "最近Thất bại" : "未执行"}
               </Badge>
             </div>
           </div>
@@ -194,14 +194,14 @@ export function BackupSettingsCard() {
                 checked={Boolean(backup.enabled)}
                 onCheckedChange={(checked) => setBackupField("enabled", Boolean(checked))}
               />
-              启用定时备份
+              Bật定时备份
             </label>
             <label className="flex items-center gap-3 rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-700">
               <Checkbox
                 checked={Boolean(backup.encrypt)}
                 onCheckedChange={(checked) => setBackupField("encrypt", Boolean(checked))}
               />
-              启用备份加密
+              Bật备份加密
             </label>
 
           <div className="space-y-2">
@@ -230,7 +230,7 @@ export function BackupSettingsCard() {
           <div className="space-y-2">
             <label className="text-sm text-stone-700">定时备份间隔</label>
             <Input value={String(backup.interval_minutes || "")} onChange={(event) => setBackupField("interval_minutes", event.target.value)} placeholder="360" className="h-10 rounded-xl border-stone-200 bg-white" />
-            <p className="text-xs text-stone-500">单位分钟，服务启动后会按此间隔自动轮询执行。</p>
+            <p className="text-xs text-stone-500">单位phút，服务启动后会按此间隔自动轮询执行。</p>
           </div>
 
           <div className="space-y-2">
@@ -240,8 +240,8 @@ export function BackupSettingsCard() {
           </div>
           <div className="space-y-2">
             <label className="text-sm text-stone-700">加密口令</label>
-            <Input type="password" value={String(backup.passphrase || "")} onChange={(event) => setBackupField("passphrase", event.target.value)} placeholder={backup.encrypt ? "启用加密后必填" : "留空"} className="h-10 rounded-xl border-stone-200 bg-white" />
-            <p className="text-xs text-stone-500">仅在启用加密时使用。请妥善保管，否则无法解密备份内容。</p>
+            <Input type="password" value={String(backup.passphrase || "")} onChange={(event) => setBackupField("passphrase", event.target.value)} placeholder={backup.encrypt ? "Bật加密后必填" : "留空"} className="h-10 rounded-xl border-stone-200 bg-white" />
+            <p className="text-xs text-stone-500">仅在Bật加密时使用。请妥善保管，否则无法解密备份内容。</p>
           </div>
           </div>
 
@@ -299,7 +299,7 @@ export function BackupSettingsCard() {
           </Button>
           <Button className="h-9 rounded-xl bg-stone-950 px-4 text-white hover:bg-stone-800" onClick={() => void saveConfig()} disabled={isSavingConfig}>
             {isSavingConfig ? <LoaderCircle className="size-4 animate-spin" /> : <CloudUpload className="size-4" />}
-            保存配置
+            Lưu cấu hình
           </Button>
           </div>
 
@@ -317,7 +317,7 @@ export function BackupSettingsCard() {
             </div>
           ) : backups.length === 0 ? (
             <div className="rounded-xl bg-stone-50 px-6 py-10 text-center text-sm text-stone-500">
-              暂无远端备份记录。保存配置并执行一次手动备份后会出现在这里。
+              暂无远端备份记录。Lưu cấu hình并执行一次手动备份后会出现在这里。
             </div>
           ) : (
             <div className="space-y-3">
@@ -345,11 +345,11 @@ export function BackupSettingsCard() {
                         onClick={() => void handleDownload(item.key, item.name)}
                       >
                         <Download className="size-4" />
-                        下载
+                        Tải xuống
                       </Button>
                       <Button type="button" variant="outline" className="h-9 rounded-xl border-stone-200 bg-white px-4 text-stone-700" onClick={() => void handleOpenDetail(item.key)}>
                         <Eye className="size-4" />
-                        查看详情
+                        Xem chi tiết
                       </Button>
                       <Button
                         type="button"
@@ -383,7 +383,7 @@ export function BackupSettingsCard() {
               </div>
             ) : !detail ? (
               <div className="rounded-xl bg-stone-50 px-6 py-10 text-center text-sm text-stone-500">
-                暂时无法读取备份详情；如果这是加密备份，请确认当前已填写正确的加密口令并先保存配置。
+                暂时无法读取备份详情；如果这是加密备份，请确认当前已填写正确的加密口令并先Lưu cấu hình。
               </div>
             ) : (
               <>

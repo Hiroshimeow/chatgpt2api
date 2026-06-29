@@ -68,7 +68,7 @@ async function downloadStoredImage(image: StoredImage, index: number) {
     }
   } catch (err) {
     console.error("Failed to download image:", err);
-    // 如果 fetch 失败，尝试直接在新窗口打开
+    // 如果 fetch Thất bại，尝试直接在新窗口打开
     if (image.url) {
       window.open(image.url, "_blank");
     }
@@ -138,7 +138,7 @@ export function ImageResults({
               fontFamily: '"Palatino Linotype","Book Antiqua","URW Palladio L","Times New Roman",serif',
             }}
           >
-            在同一窗口里保留本地历史与任务状态，并从已有结果图继续发起新的无状态编辑。
+            在同一窗口里保留本地历史与Trạng thái task，并从已有结果图继续发起新的无状态编辑。
           </p>
         </div>
       </div>
@@ -174,7 +174,7 @@ export function ImageResults({
                   <div className="mb-1.5 flex flex-wrap justify-end gap-2 text-[11px] text-stone-400 sm:mb-2">
                     <span>第 {turnIndex + 1} 轮</span>
                     <span>
-                      {turn.mode === "edit" ? "编辑图" : "文生图"}
+                      {turn.mode === "edit" ? "编辑图" : "文Tạo ảnh"}
                     </span>
                     <span>{getTurnStatusLabel(turn.status)}</span>
                     <span>{formatConversationTime(turn.createdAt)}</span>
@@ -186,13 +186,13 @@ export function ImageResults({
                       onClick={() => void onReuseTurnConfig(selectedConversation.id, turn.id)}
                       className="inline-flex items-center gap-1 rounded-full bg-stone-100 px-2.5 py-1 text-[11px] font-medium text-stone-600 transition hover:bg-stone-200 hover:text-stone-900"
                     >
-                      复用配置
+                      复用Cấu hình
                     </button>
                     <button
                       type="button"
                       onClick={() => onDeletePrompt(selectedConversation.id, turn.id)}
                       className="inline-flex size-6 items-center justify-center rounded-full text-stone-300 transition hover:bg-rose-50 hover:text-rose-500"
-                      aria-label="删除提示词记录"
+                      aria-label="Xóa bản ghi prompt"
                     >
                       <Trash2 className="size-3" />
                     </button>
@@ -294,10 +294,10 @@ export function ImageResults({
                                   size="sm"
                                   className="h-7 w-7 rounded-full border-stone-200 bg-white px-0 text-[10px] text-stone-700 hover:bg-stone-50 sm:h-8 sm:w-fit sm:px-3 sm:text-xs"
                                   onClick={() => void downloadStoredImage(image, index)}
-                                  aria-label="下载"
+                                  aria-label="Tải xuống"
                                 >
                                   <Download className="size-3 sm:size-4" />
-                                  <span className="hidden sm:inline">下载</span>
+                                  <span className="hidden sm:inline">Tải xuống</span>
                                 </Button>
                               </div>
                             </div>
@@ -322,7 +322,7 @@ export function ImageResults({
                             >
                             <div className="flex h-full min-h-16 flex-col items-center justify-center gap-1.5 px-2 py-2 text-center text-[11px] leading-4 text-rose-600 sm:gap-3 sm:px-6 sm:py-8 sm:text-sm sm:leading-6">
                               <p className="font-medium">图片 {index + 1}/{turn.images.length}</p>
-                              <span className="line-clamp-2 sm:line-clamp-none">{image.error || "生成失败"}</span>
+                              <span className="line-clamp-2 sm:line-clamp-none">{image.error || "生成Thất bại"}</span>
                               <div className="flex items-center gap-2">
                                 {isTimeoutError && (
                                   <button
@@ -427,7 +427,7 @@ export function ImageResults({
                       type="button"
                       onClick={() => onDeleteResults(selectedConversation.id, turn.id)}
                       className="inline-flex size-6 items-center justify-center rounded-full text-stone-300 transition hover:bg-rose-50 hover:text-rose-500"
-                      aria-label="删除生成结果"
+                      aria-label="Xóa kết quả tạo"
                     >
                       <Trash2 className="size-3" />
                     </button>
@@ -452,7 +452,7 @@ function getTurnStatusLabel(status: ImageTurnStatus) {
   if (status === "success") {
     return "已完成";
   }
-  return "失败";
+  return "Thất bại";
 }
 
 const PROGRESS_LABELS: Record<string, string> = {

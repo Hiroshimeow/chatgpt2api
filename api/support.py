@@ -23,7 +23,7 @@ def extract_bearer_token(authorization: str | None) -> str:
 def _legacy_admin_identity(token: str) -> dict[str, object] | None:
     auth_key = str(config.auth_key or "").strip()
     if auth_key and token == auth_key:
-        return {"id": "admin", "name": "管理员", "role": "admin"}
+        return {"id": "admin", "name": "Admin", "role": "admin"}
     return None
 
 
@@ -42,7 +42,7 @@ def require_auth_key(authorization: str | None) -> None:
 def require_admin(authorization: str | None) -> dict[str, object]:
     identity = require_identity(authorization)
     if identity.get("role") != "admin":
-        raise HTTPException(status_code=403, detail={"error": "需要管理员权限才能执行这个操作"})
+        raise HTTPException(status_code=403, detail={"error": "需要Admin权限才能执行这个操作"})
     return identity
 
 

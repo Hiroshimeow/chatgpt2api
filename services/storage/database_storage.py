@@ -120,7 +120,7 @@ class DatabaseStorageBackend(StorageBackend):
         try:
             session = self.Session()
             try:
-                # 尝试执行简单查询
+                # 尝试执行简单Truy vấn
                 session.execute(text("SELECT 1"))
                 count = session.query(AccountModel).count()
                 auth_key_count = session.query(AuthKeyModel).count()
